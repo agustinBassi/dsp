@@ -1,29 +1,62 @@
 import os
+from scipy.io import wavfile
+import struct
 
 class WavFile:
 
     def convert_to_raw(wav_file):
-        print ("convert_to_raw(): {}".format(wav_file))
+        print ("\nconvert_to_raw(): {}".format(wav_file))
+        data = []
+        try:
+            fs, data = wavfile.read(wav_file)
+            print ("\t- FS: " + str(fs))
+            print ("\t- Data elements: " + str(len(data)) + "\n")
+        except:
+            print ("\tERROR - convert_to_raw(): {}".format(wav_file))
+        
+        return data
+        
+    def save_raw_into_wav(raw_list, wav_path):
+        print ("save_raw_into_wav(): {}".format(wav_path))
+        
+        file_wav = open(wav_path, 'w')
 
-    def convert_to_wav(raw_file):
-        print ("convert_to_wav(): {}".format(raw_file))
+        for i in range(0, len(raw_list)):
+            value = raw_list[i] #random.randint(-32767, 32767)
+            packed_value = struct.pack('h', value)
+            file_wav.write(packed_value)
+
+        file_wav.close()
 
     def play (file_path):
-        print ("play(): {}".format(file_path))
-        playsound(file_path)
+        print ("\nplay(): {}".format(file_path))
+        try:
+            os.system("aplay {}".format(file_path))
+        except:
+            print ("\tERROR - play(): {}".format(wav_file))
 
     def get_duration (wav_file):
-        print ("get_duration(): {}".format(wav_file))
+        print ("\nget_duration(): {}".format(wav_file))
+        duration = 0.0
+        try:
+            fs, data = wavfile.read(wav_file)
+            duration = len(data)/fs
+            print ("\t- Duration: " + str(duration))
+        except:
+            print ("\tERROR - get_duration(): {}".format(wav_file))
+        
+        return duration
 
 def test_WavFile():
-  FILE_PATH = "/home/agustin/Desktop/dsp/wavs/tone_1khz.wav"
+  ORIGINAL_WAV = "/home/agustin/Desktop/dsp/wavs/tone_1khz.wav"
+  MODIFIED_WAV = "/home/agustin/Desktop/dsp/wavs/tone_1khz_modified.wav"
 
-  print ("Testing WavFile...")
+  print ("\nTesting WavFile...\n")
   
-  WavFile.convert_to_raw(FILE_PATH)
-  WavFile.convert_to_wav(FILE_PATH)
-  WavFile.play(FILE_PATH)
-  WavFile.get_duration(FILE_PATH)
+  raw_list = WavFile.convert_to_raw(ORIGINAL_WAV)
+  WavFile.save_raw_into_wav(raw_list, MODIFIED_WAV)
+  WavFile.play(MODIFIED_WAV)
+  #WavFile.get_duration(FILE_PATH)
 
 
 
