@@ -1,7 +1,8 @@
-import os
 import logging
+import os
 
 from scipy.io import wavfile
+
 
 class WavFile:
     """This class works with actions related to wav files.
@@ -17,8 +18,8 @@ class WavFile:
         data = None
         try:
             fs, data = wavfile.read(wav_file)
-            logging.debug("File opened: %s - FS: %dkhz- "
-                          "Elements: %d - Duration: %.2f segs" %
+            logging.debug("File opened: %s - FS: %dkhz- " \
+                          "Elements: %d - Duration: %.2f segs" % \
                           (wav_file, fs, len(data), len(data)/fs))
         except:
             logging.error("Error openning wav: %s" % wav_file)
@@ -28,11 +29,11 @@ class WavFile:
     @staticmethod    
     def save_raw_into_wav(raw_list, wav_file):
         try:
-            logging.debug("Trying to save raw data into wav file: %s" 
+            logging.debug("Trying to save raw data into wav file: %s" \
                           % wav_file)
             wavfile.write(wav_file, WavFile.DEFAULT_FS, raw_list)
         except:
-            logging.error("Error saving raw data into wav file %s" 
+            logging.error("Error saving raw data into wav file %s" \
                           % wav_file)
 
 
