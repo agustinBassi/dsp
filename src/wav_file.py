@@ -1,3 +1,8 @@
+"""This module has all needed to work with Wav files.
+
+Copyright: Agustin Bassi, 2019.
+License: BSD.
+"""
 import logging
 import os
 

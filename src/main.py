@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 """DSP Final Practice Project.
 
-Author: Agustin Bassi
-Date: April 2019.
+Copyright: Agustin Bassi, 2019.
+License: BSD.
 """
 import logging
 
