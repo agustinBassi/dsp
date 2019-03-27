@@ -1,8 +1,14 @@
-from WavFile import test_WavFile
+import logging
+
+from wav_file import test_wav_file_class
 
 def main():
-    print("python main function")
-    test_WavFile()
+    print("Running DSP Final Practice. Log level %d" % logging.DEBUG)
 
-if __name__ == '__main__':
-    main()
+    logging.basicConfig(level=logging.DEBUG,
+                        format='%(levelname)s - %(message)s')
+
+    test_wav_file_class()
+
+
+main()
