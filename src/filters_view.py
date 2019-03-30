@@ -84,21 +84,19 @@ class FiltersView:
     def plot_comb_filter(frequencies, response_in_frequency, 
                          title="Comb filter response in frecuency", 
                          label_x="Time", label_y="Amplitude",
-                         ref_1="Frecuency", ref_2="Response in frecuency",
-                         refs_location="best"):
+                         ref_1="Response in frecuency", refs_location="best"):
 
         logging.debug("Showing Comb filter plot - " \
                       "title: %s, Label X: %s, Label Y: %s, " %
                       (title, label_x, label_y))
 
         # plot signals to graphic
-        plt.plot(frequencies)
-        plt.plot(response_in_frequency)
+        plt.plot(frequencies, abs(response_in_frequency))
         # set labels to axes
         plt.title(title)
         plt.xlabel(label_x)
         plt.ylabel(label_y)
-        plt.legend([ref_1, ref_2], loc=refs_location)
+        plt.legend([ref_1], loc=refs_location)
         # show figure
         plt.show()
 
