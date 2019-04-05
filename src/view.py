@@ -18,21 +18,22 @@ class View:
         print("\t1 - show current configuration parameters")
         print("\t2 - set new parameters")
         print("\t3 - plot response in frecuency of comb filter")
-        print("\t4 - apply flanger filter and save new wav modified")
-        print("\t5 - same as 4 option but plotting the response")
-        print("\t6 - save current values into config file")
+        print("\t4 - play original wav audio")
+        print("\t5 - play flanger wav audio")    
+        print("\t6 - plot flanger filter signal")
+        print("\t7 - save current values into config file")
         print("\n==================================================\n")
         
         while True:
             try:
-                option = int(input("Enter option from 0 to 6 > "))
-                if (option >= 0 and option <= 6):
+                option = int(input("Enter option from 0 to 7 > "))
+                if (option >= 0 and option <= 7):
                     break
                 else:
                     raise ValueError
             except ValueError:
                 print("\n================================================\n")
-                print("ERROR - Type a valid menu option from 1 to 6!")
+                print("ERROR - Type a valid menu option from 1 to 7!")
                 print("\n================================================\n")
 
         return option

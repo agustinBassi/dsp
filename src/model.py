@@ -246,9 +246,8 @@ class Model:
 
     def __init__(self, db):
         self.__db = db
-        self.__load_data_from_db()
 
-    def __load_data_from_db(self):
+    def load_data_from_db(self):
         error_flag = False
         try:
             with open(self.__db) as db_data:
@@ -302,29 +301,41 @@ class Model:
         return error_flag
 
     def get_all_params(self):
-        return ("%s\n%s\n%s" % (str(self.__config), str(self.__comb),
-                                str(self.__flanger)))
+        # return ("%s\n%s\n%s" % (str(self.__config), str(self.__comb),
+        #                         str(self.__flanger)))
+        return {
+            'config.welcome_message': self.__config.welcome_message,
+            'config.wav_original': self.__config.wav_original,
+            'config.wav_original': self.__config.wav_original,
+            'comb.delay': self.__comb.delay,
+            'comb.scale': self.__comb.scale,
+            'flanger.fs': self.__flanger.fs,
+            'flanger.max_delay': self.__flanger.max_delay,
+            'flanger.scale': self.__flanger.scale,
+            'flanger.rate': self.__flanger.rate
+        }
+        
 
     def set_param(self, option, value):
         error_flag = False
 
-        if option == 0 and type(value) == str:
+        if option == 1 and type(value) == str:
             self.__config.welcome_message = value
-        elif option == 1 and type(value) == str:
-            self.__config.wav_original = value
         elif option == 2 and type(value) == str:
+            self.__config.wav_original = value
+        elif option == 3 and type(value) == str:
             self.__config.wav_modified = value
-        elif option == 3 and type(value) == int:
+        elif option == 4 and type(value) == int:
             self.__comb.delay = value
-        elif option == 4 and type(value) == float:
+        elif option == 5 and type(value) == float:
             self.__comb.scale = value
-        elif option == 5 and type(value) == int:
+        elif option == 6 and type(value) == int:
             self.__flanger.fs = value
-        elif option == 6 and type(value) == float:
-            self.__flanger.max_delay = value
         elif option == 7 and type(value) == float:
-            self.__flanger.scale = value
+            self.__flanger.max_delay = value
         elif option == 8 and type(value) == float:
+            self.__flanger.scale = value
+        elif option == 9 and type(value) == float:
             self.__flanger.rate = value
         else:
             error_flag = True
@@ -372,6 +383,8 @@ class Model:
     def get_comb_signal(self):
         return self.__comb.get_response_in_frecuency()
 
+    def get_parent_dir(self):
+        return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
     @staticmethod
     def save_raw_to_wav(raw_data, wav_file):
