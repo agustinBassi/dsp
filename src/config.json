@@ -1,0 +1,11 @@
+{
+    "config_welcome_message": "DSP Controller",
+    "config_wav_original": "wavs/tone_1khz.wav",
+    "config_wav_modified": "wavs/tone_1khz_modified.wav",
+    "comb_delay": 8,
+    "comb_scale": 1.0,
+    "flanger_fs": 44100,
+    "flanger_max_delay": 0.006,
+    "flanger_scale": 0.5,
+    "flanger_rate": 1.47
+}
