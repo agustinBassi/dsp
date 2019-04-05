@@ -1,0 +1,6 @@
+src/__pycache__
+.vscode
+
+dsp_mvc/dsp/__pycache__/
+
+wavs/tone_1khz_modified\.wav

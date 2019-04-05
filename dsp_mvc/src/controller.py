@@ -1,8 +1,8 @@
 import sys
 
-from model import Model
-from model import Error
-from view import View
+from .model import Model
+from .model import Error
+from .view import View
 
 class Controller:
     """

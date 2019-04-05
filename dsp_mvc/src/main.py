@@ -9,9 +9,9 @@ import logging
 import argparse
 import os
 
-from model import Model
-from view import View
-from controller import Controller
+from .model import Model
+from .view import View
+from .controller import Controller
 
 DEFAULT_LOG_LEVEL = logging.DEBUG
 DEFAULT_CONFIG_FILE = "/home/agustin/projects/dsp/dsp_mvc/db/db_config_table.json"
