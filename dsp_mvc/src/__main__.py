@@ -14,7 +14,7 @@ from .view import View
 from .controller import Controller
 
 DEFAULT_LOG_LEVEL = logging.DEBUG
-DEFAULT_CONFIG_FILE = "/home/juan.bassi/personalProjects/dsp_final/dsp_mvc/src/config.json"
+DEFAULT_CONFIG_FILE = "/config.json"
 DEFAULT_TEST_FLAG = False
 
 def parse_options(log_level, config_file, test_flag):
@@ -56,7 +56,8 @@ def main():
     """
     
     log_level = DEFAULT_LOG_LEVEL
-    config_file = DEFAULT_CONFIG_FILE
+    config_file = os.path.dirname(os.path.realpath(__file__))
+    config_file += DEFAULT_CONFIG_FILE
     test_flag = DEFAULT_TEST_FLAG
 
     log_level, config_file, test_flag = parse_options(log_level, config_file,
