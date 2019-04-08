@@ -302,19 +302,23 @@ class Model:
         return error_flag
 
     def get_all_params(self):
-        # return ("%s\n%s\n%s" % (str(self.__config), str(self.__comb),
-        #                         str(self.__flanger)))
-        return {
-            'config.welcome_message': self.__config.welcome_message,
-            'config.wav_original': self.__config.wav_original,
-            'config.wav_original': self.__config.wav_original,
-            'comb.delay': self.__comb.delay,
-            'comb.scale': self.__comb.scale,
-            'flanger.fs': self.__flanger.fs,
-            'flanger.max_delay': self.__flanger.max_delay,
-            'flanger.scale': self.__flanger.scale,
-            'flanger.rate': self.__flanger.rate
-        }
+        params = \
+        "\t- 'config.welcome_message': '%s'\n" \
+        "\t- 'config.wav_original': '%s'\n" \
+        "\t- 'config.wav_modified': '%s'\n" \
+        "\t- 'comb.delay': %d\n" \
+        "\t- 'comb.scale': %.2f\n" \
+        "\t- 'flanger.fs': %d\n" \
+        "\t- 'flanger.max_delay': %.3f\n" \
+        "\t- 'flanger.scale': %.2f\n" \
+        "\t- 'flanger.rate': %.2f\n" % \
+        (self.__config.welcome_message, self.__config.wav_original,
+        self.__config.wav_modified, self.__comb.delay, self.__comb.scale,
+        self.__flanger.fs, self.__flanger.max_delay, self.__flanger.scale,
+        self.__flanger.rate)
+        
+        return params
+
         
 
     def set_param(self, option, value):
