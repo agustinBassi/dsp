@@ -4,6 +4,7 @@ from .model import Model
 from .model import Error
 from .view import View
 
+
 class Controller:
     """
     """
@@ -12,7 +13,7 @@ class Controller:
         self.__view = view
         self.__model = model
         error = self.__model.load_data_from_db()
-        if error == True:
+        if error:
             self.__view.show_error("Error while loading db file for model")
         else:
             self.__view.show_info("DB data loaded correctly")
@@ -48,9 +49,9 @@ class Controller:
     def set_new_parameters(self):
         option, value = self.__view.show_settings_menu()
         error = self.__model.set_param(option, value)
-        if error == True:
+        if error:
             self.__view.show_error(Error.get_error_message())
-        else:    
+        else:
             self.__view.show_info("'{}': '{}' updated".format(option, value))
 
     def show_comb_response(self):
@@ -72,7 +73,8 @@ class Controller:
         if not error:
             error, flanger_signal = self.__model.get_flanger_signal(raw_signal)
             if not error:
-                flanger_wav_file = parent_dir + "/" + self.__model.get_param(2)[1]
+                flanger_wav_file = parent_dir + \
+                    "/" + self.__model.get_param(2)[1]
                 Model.save_raw_to_wav(flanger_signal, flanger_wav_file)
                 self.__view.play_audio(flanger_wav_file)
             else:
@@ -94,4 +96,3 @@ class Controller:
 
     def save_current_settings(self):
         self.__model.save_data_to_db()
-    

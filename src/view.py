@@ -9,6 +9,7 @@ import os
 import matplotlib.pyplot as plt
 from scipy.io import wavfile
 
+
 class View:
 
     def show_main_menu(self):
@@ -19,11 +20,11 @@ class View:
         print("\t2 - set new parameters")
         print("\t3 - plot response in frecuency of comb filter")
         print("\t4 - play original wav audio")
-        print("\t5 - play flanger wav audio")    
+        print("\t5 - play flanger wav audio")
         print("\t6 - plot flanger filter signal")
         print("\t7 - save current values into config file")
         print("\n==================================================\n")
-        
+
         while True:
             try:
                 option = int(input("Enter option from 0 to 7 > "))
@@ -58,13 +59,13 @@ class View:
                 option = int(input("Enter option from 0 to 9 > "))
                 if (option >= 0 and option <= 9):
                     break
-                else: 
+                else:
                     raise ValueError
             except ValueError:
                 print("\n================================================\n")
                 print("ERROR - Type a valid menu option from 0 to 9!")
                 print("\n================================================\n")
-        
+
         value = None
 
         if option == 1:
@@ -72,7 +73,7 @@ class View:
         elif option == 2:
             value = (str(input("\n\tEnter wav original > ")))
         elif option == 3:
-            value = (str(input("\n\tEnter wav modified >" )))
+            value = (str(input("\n\tEnter wav modified >")))
         elif option == 4:
             value = (int(input("\n\tEnter comb delay > ")))
         elif option == 5:
@@ -88,12 +89,12 @@ class View:
 
         return option, value
 
-    def plot_comb_filter(self, response_in_frequency, 
-                         title="Comb filter response in frecuency", 
+    def plot_comb_filter(self, response_in_frequency,
+                         title="Comb filter response in frecuency",
                          label_x="Time", label_y="Amplitude",
                          ref_1="Response in frecuency", refs_location="best"):
 
-        logging.debug("Showing Comb filter plot - " \
+        logging.debug("Showing Comb filter plot - "
                       "title: %s, Label X: %s, Label Y: %s, " %
                       (title, label_x, label_y))
 
@@ -107,16 +108,16 @@ class View:
         # show figure
         plt.show()
 
-    def plot_flanger_signals(self, original_signal, flanger_signal, 
-                            title="Flanger signal response", 
-                            label_x="Time", label_y="Amplitude",
-                            ref_1="Original signal", ref_2="Flanger signal",
-                            refs_location="best"):
+    def plot_flanger_signals(self, original_signal, flanger_signal,
+                             title="Flanger signal response",
+                             label_x="Time", label_y="Amplitude",
+                             ref_1="Original signal", ref_2="Flanger signal",
+                             refs_location="best"):
 
-        logging.debug("Plot flanger signal - " \
+        logging.debug("Plot flanger signal - "
                       "title: %s, Label X: %s, Label Y: %s, " %
                       (title, label_x, label_y))
-                    
+
         # plot signals to graphic
         plt.plot(original_signal)
         plt.plot(flanger_signal)
@@ -131,7 +132,7 @@ class View:
     def show_current_settings(self, settings):
         print("\n==================================================\n")
         print("Current settings:\n")
-        print(settings)    
+        print(settings)
         print("\n==================================================\n")
 
     def play_audio(self, audio_file):
@@ -139,11 +140,11 @@ class View:
         print("\n==================================================\n")
         try:
             os.system("aplay %s" % audio_file)
-        except:
+        except BaseException:
             logging.error("Error playing wav file: %s" % audio_file)
             error_flag = True
         print("\n==================================================\n")
-        
+
         return error_flag
 
     def show_error(self, error_message):
@@ -156,7 +157,7 @@ class View:
         print("INFO: %s" % error_message)
         print("\n==================================================\n")
 
-    @staticmethod    
+    @staticmethod
     def show_program_arguments(log_level, config_file, test_flag):
         print("\n==================================================\n")
         print("Command line arguments:")
