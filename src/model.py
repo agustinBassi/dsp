@@ -3,6 +3,7 @@ import os
 import math
 import os
 import json
+import configparser
 
 import numpy as np
 import scipy.signal as signal
@@ -250,23 +251,22 @@ class Model:
     def load_data_from_db(self):
         error_flag = False
         try:
-            with open(self.__db) as db_data:
-                data = json.load(db_data)
+            config = configparser.ConfigParser()
+            config.read(self.__db)
             
-            self.__config = Configuration(data['config_welcome_message'],
-                                          data['config_wav_original'],
-                                          data['config_wav_modified'])
+            self.__config = Configuration(config['GENERAL']['config_welcome_message'],
+                                          config['GENERAL']['config_wav_original'],
+                                          config['GENERAL']['config_wav_modified'])
 
-            self.__comb = CombFilter(data['comb_delay'],
-                                     data['comb_scale'])
+            self.__comb = CombFilter(int(config['COMB']['comb_delay']),
+                                     float(config['COMB']['comb_delay']))
 
-            self.__flanger = FlangerFilter(data['flanger_fs'],
-                                           data['flanger_max_delay'],
-                                           data['flanger_scale'],
-                                           data['flanger_rate'])
+            self.__flanger = FlangerFilter(int(config['FLANGER']['flanger_fs']),
+                                           float(config['FLANGER']['flanger_max_delay']),
+                                           float(config['FLANGER']['flanger_scale']),
+                                           float(config['FLANGER']['flanger_rate']))
 
-            logging.debug("Config file read correctly: %s" % 
-                           self.__db)
+            logging.debug("Config file read correctly: %s" % self.__db)
         except:
             logging.error("Error read config file: %s" % self.__db)
             Error.set_error_message("Error read config file: %s" % self.__db)
@@ -277,21 +277,22 @@ class Model:
     def save_data_to_db(self):
         error_flag = False
 
-        new_data = {
-            'config_welcome_message': str(self.__config.welcome_message),
-            'config_wav_original': str(self.__config.wav_original),
-            'config_wav_modified': str(self.__config.wav_modified),
-            'comb_delay': int(self.__comb.delay),
-            'comb_scale': float(self.__comb.scale),
-            'flanger_fs': int(self.__flanger.fs),
-            'flanger_max_delay': float(self.__flanger.max_delay),
-            'flanger_scale': float(self.__flanger.scale),
-            'flanger_rate': float(self.__flanger.rate)
-        }
+        config = configparser.ConfigParser()
+        config.read(self.__db)
+
+        config['GENERAL']['config_welcome_message'] = self.__config.welcome_message
+        config['GENERAL']['config_wav_original'] = self.__config.wav_original
+        config['GENERAL']['config_wav_modified'] = self.__config.wav_modified
+        config['COMB']['comb_delay'] = str(self.__comb.delay)              
+        config['COMB']['comb_scale'] = str(self.__comb.scale)              
+        config['FLANGER']['flanger_fs'] = str(self.__flanger.fs)           
+        config['FLANGER']['flanger_max_delay'] = str(self.__flanger.max_delay)    
+        config['FLANGER']['flanger_scale'] = str(self.__flanger.scale)         
+        config['FLANGER']['flanger_rate'] = str(self.__flanger.rate)         
 
         try:
-            with open(self.__db, 'w') as db_data:  
-                json.dump(new_data, db_data, indent=4)
+            with open(self.__db, 'w') as configfile:
+                config.write(configfile)
             logging.debug("New data was saved into %s" % self.__db)
         except:
             logging.error("Impossible to save config file")
