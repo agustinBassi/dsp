@@ -8,6 +8,7 @@ from src.model import CombFilter
 from src.model import Model
 from src.model import Error
 
+
 class TestConfiguration(unittest.TestCase):
 
     @classmethod
@@ -46,6 +47,7 @@ class TestConfiguration(unittest.TestCase):
         self.config.wav_modified = "cc"
         self.assertEqual("cc", self.config.wav_modified)
 
+
 class TestFlangerFilter(unittest.TestCase):
 
     @classmethod
@@ -64,7 +66,7 @@ class TestFlangerFilter(unittest.TestCase):
 
     def test_repr(self):
         expected_text = "{'fs': '1', 'max_delay: '2.0000'," \
-                "'scale': '3.00', 'rate': '4.00'}"
+            "'scale': '3.00', 'rate': '4.00'}"
         self.assertEqual(repr(self.flanger), expected_text)
 
     def test_str(self):
@@ -78,7 +80,7 @@ class TestFlangerFilter(unittest.TestCase):
     def test_fs(self):
         self.flanger.fs = 11
         self.assertEqual(self.flanger.fs, 11)
-    
+
     def test_max_delay(self):
         self.flanger.max_delay = 2.2
         self.assertEqual(self.flanger.max_delay, 2.2)
@@ -90,6 +92,7 @@ class TestFlangerFilter(unittest.TestCase):
     def test_rate(self):
         self.flanger.rate = 4.4
         self.assertEqual(self.flanger.rate, 4.4)
+
 
 class TestCombFilter(unittest.TestCase):
 
@@ -123,6 +126,7 @@ class TestCombFilter(unittest.TestCase):
         self.comb.scale = 2.2
         self.assertEqual(self.comb.scale, 2.2)
 
+
 class TestError(unittest.TestCase):
 
     @classmethod
@@ -146,6 +150,7 @@ class TestError(unittest.TestCase):
         Error.set_error_message("Error 2")
         self.assertNotEqual(Error.get_error_message(), "Error 1")
 
+
 class TestModel(unittest.TestCase):
 
     ERROR_FIXTURE_PATH = "error_fixture_path"
@@ -153,7 +158,8 @@ class TestModel(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        TestModel.config_file = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        TestModel.config_file = os.path.dirname(
+            os.path.dirname(os.path.abspath(__file__)))
         TestModel.config_file += TestModel.CORRECT_FIXTURE_PATH
 
     @classmethod
@@ -234,42 +240,42 @@ class TestModel(unittest.TestCase):
 
     def test_get_param_incorrects(self):
         values_to_test = ["a", 2.1, ["a", "b"], ("a", "b"), {"a": "b"},
-                          {"a", "b"}, -1, 100]  
+                          {"a", "b"}, -1, 100]
 
         model = Model(TestModel.config_file)
 
         # test option from every value_to_test
-        for i in range (len(values_to_test)):
+        for i in range(len(values_to_test)):
             # get_param start from 1 to get values
             error_flag, _ = model.get_param(values_to_test[i])
             self.assertEqual(error_flag, True)
 
     def test_get_param_corrects(self):
-        values_to_test = ("DSP Controller!", 
-                          "wavs/tone_1khz.wav", 
-                          "wavs/tone_1khz_modified.wav", 
-                          8, 1.0, 
+        values_to_test = ("DSP Controller!",
+                          "wavs/tone_1khz.wav",
+                          "wavs/tone_1khz_modified.wav",
+                          8, 1.0,
                           44100, 0.003, 0.5, 1.0)
 
         model = Model(TestModel.ERROR_FIXTURE_PATH)
 
         # test option from every value_to_test
-        for i in range (len(values_to_test)):
+        for i in range(len(values_to_test)):
             # get_param start from 1 to get values
             error_flag, value = model.get_param(i + 1)
             self.assertEqual(error_flag, False)
             self.assertEqual(value, values_to_test[i])
-        
+
     def test_set_param_incorrects(self):
         values_to_test = (2, 2, 2, "2", 2, "2", 2, 2, 2)
 
         model = Model(TestModel.config_file)
 
         # test option from every value_to_test
-        for i in range (len(values_to_test)):
+        for i in range(len(values_to_test)):
             # get_param start from 1 to get values
             error_flag = model.set_param(i + 1, values_to_test[i])
-            self.assertEqual(error_flag, True)    
+            self.assertEqual(error_flag, True)
 
     def test_set_param_corrects(self):
         values_to_test = ("a", "a", "a", 123, 1.1, 123, 1.1, 1.1, 1.1)
@@ -277,7 +283,7 @@ class TestModel(unittest.TestCase):
         model = Model(TestModel.ERROR_FIXTURE_PATH)
 
         # test option from every value_to_test
-        for i in range (len(values_to_test)):
+        for i in range(len(values_to_test)):
             # get_param start from 1 to get values
             error_flag = model.set_param(i + 1, values_to_test[i])
             self.assertEqual(error_flag, False)
@@ -295,8 +301,7 @@ class TestModel(unittest.TestCase):
         self.assertEqual(comb_signal_model.all(), comb_signal.all())
 
 
-
-### TODO SECTION
+# TODO SECTION
 
 # TODO testear flanger
 # TODO testear los metodos que faltan en model
