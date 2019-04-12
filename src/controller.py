@@ -60,7 +60,7 @@ class Controller:
 
     def play_original_signal(self):
         parent_dir = self.__model.get_parent_dir()
-        error, wav_file = self.__model.get_param(1)
+        error, wav_file = self.__model.get_param(2)
         if not error:
             self.__view.play_audio("%s/%s" % (parent_dir, wav_file))
         else:
@@ -68,13 +68,13 @@ class Controller:
 
     def play_flanger_signal(self):
         parent_dir = self.__model.get_parent_dir()
-        wav_file = parent_dir + "/" + self.__model.get_param(1)[1]
+        wav_file = parent_dir + "/" + self.__model.get_param(2)[1]
         error, raw_signal = Model.convert_wav_to_raw(wav_file)
         if not error:
             error, flanger_signal = self.__model.get_flanger_signal(raw_signal)
             if not error:
                 flanger_wav_file = parent_dir + \
-                    "/" + self.__model.get_param(2)[1]
+                    "/" + self.__model.get_param(3)[1]
                 Model.save_raw_to_wav(flanger_signal, flanger_wav_file)
                 self.__view.play_audio(flanger_wav_file)
             else:
@@ -83,7 +83,7 @@ class Controller:
             self.__view.show_error("Error converting original wav")
 
     def show_flanger_signal(self):
-        wav_file = self.__model.get_param(1)[1]
+        wav_file = self.__model.get_param(2)[1]
         error, raw_signal = Model.convert_wav_to_raw(wav_file)
         if not error:
             error, flanger_signal = self.__model.get_flanger_signal(raw_signal)

@@ -79,7 +79,7 @@ class FlangerFilter:
 
     def __repr__(self):
         return ("{'fs': '%d', 'max_delay: '%.4f',"
-                "'scale': '%.2f', 'rate': '%f'}" %
+                "'scale': '%.2f', 'rate': '%.2f'}" %
                 (self.__fs, self.__max_delay, self.__scale, self.__rate))
 
     def __str__(self):
@@ -176,8 +176,6 @@ class CombFilter:
     def __init__(self, delay, scale):
         self.__delay = delay
         self.__scale = scale
-        self.__numerator = [1] + (self.__delay - 1) * [0] + [self.__scale]
-        self.__denominator = 1.0
 
     def __repr__(self):
         return ("{'delay': '%d', 'scale: '%.2f'}" %
@@ -239,8 +237,19 @@ class Error:
 
 class Model:
 
+    DEFAULT_CONFIG_WELCOME_MESSAGE = "DSP Controller!"
+    DEFAULT_CONFIG_WAV_ORIGINAL = "wavs/tone_1khz.wav"
+    DEFAULT_CONFIG_WAV_MODIFIED = "wavs/tone_1khz_modified.wav"
+    DEFAULT_COMB_DELAY = 8
+    DEFAULT_COMB_SCALE = 1.0
+    DEFAULT_FLANGER_FS = 44100
+    DEFAULT_FLANGER_MAX_DELAY = 0.003
+    DEFAULT_FLANGER_SCALE = 0.5
+    DEFAULT_FLANGER_RATE = 1.0
+
     def __init__(self, db):
         self.__db = db
+        self.load_data_from_db()
 
     def load_data_from_db(self):
         error_flag = False
@@ -254,40 +263,53 @@ class Model:
                 config['GENERAL']['config_wav_modified'])
 
             self.__comb = CombFilter(int(config['COMB']['comb_delay']),
-                                     float(config['COMB']['comb_delay']))
+                                     float(config['COMB']['comb_scale']))
 
             self.__flanger = FlangerFilter(
-                int(
-                    config['FLANGER']['flanger_fs']), float(
-                    config['FLANGER']['flanger_max_delay']), float(
-                    config['FLANGER']['flanger_scale']), float(
-                    config['FLANGER']['flanger_rate']))
+                int(config['FLANGER']['flanger_fs']), 
+                float(config['FLANGER']['flanger_max_delay']), 
+                float(config['FLANGER']['flanger_scale']), 
+                float(config['FLANGER']['flanger_rate']))
 
             logging.debug("Config file read correctly: %s" % self.__db)
         except BaseException:
             logging.error("Error read config file: %s" % self.__db)
             Error.set_error_message("Error read config file: %s" % self.__db)
+
+            self.__config = Configuration(
+                Model.DEFAULT_CONFIG_WELCOME_MESSAGE,
+                Model.DEFAULT_CONFIG_WAV_ORIGINAL,
+                Model.DEFAULT_CONFIG_WAV_MODIFIED)
+
+            self.__comb = CombFilter(Model.DEFAULT_COMB_DELAY,
+                                     Model.DEFAULT_COMB_SCALE)
+
+            self.__flanger = FlangerFilter(
+                Model.DEFAULT_FLANGER_FS, 
+                Model.DEFAULT_FLANGER_MAX_DELAY, 
+                Model.DEFAULT_FLANGER_SCALE, 
+                Model.DEFAULT_FLANGER_RATE)
+
             error_flag = True
 
         return error_flag
 
     def save_data_to_db(self):
         error_flag = False
-
-        config = configparser.ConfigParser()
-        config.read(self.__db)
-
-        config['GENERAL']['config_welcome_message'] = self.__config.welcome_message
-        config['GENERAL']['config_wav_original'] = self.__config.wav_original
-        config['GENERAL']['config_wav_modified'] = self.__config.wav_modified
-        config['COMB']['comb_delay'] = str(self.__comb.delay)
-        config['COMB']['comb_scale'] = str(self.__comb.scale)
-        config['FLANGER']['flanger_fs'] = str(self.__flanger.fs)
-        config['FLANGER']['flanger_max_delay'] = str(self.__flanger.max_delay)
-        config['FLANGER']['flanger_scale'] = str(self.__flanger.scale)
-        config['FLANGER']['flanger_rate'] = str(self.__flanger.rate)
-
         try:
+            config = configparser.ConfigParser()
+            config.read(self.__db)
+
+            config['GENERAL']['config_welcome_message'] = self.__config.welcome_message
+            config['GENERAL']['config_wav_original'] = self.__config.wav_original
+            config['GENERAL']['config_wav_modified'] = self.__config.wav_modified
+            config['COMB']['comb_delay'] = str(self.__comb.delay)
+            config['COMB']['comb_scale'] = str(self.__comb.scale)
+            config['FLANGER']['flanger_fs'] = str(self.__flanger.fs)
+            config['FLANGER']['flanger_max_delay'] = str(self.__flanger.max_delay)
+            config['FLANGER']['flanger_scale'] = str(self.__flanger.scale)
+            config['FLANGER']['flanger_rate'] = str(self.__flanger.rate)
+        
             with open(self.__db, 'w') as configfile:
                 config.write(configfile)
             logging.debug("New data was saved into %s" % self.__db)
@@ -348,21 +370,21 @@ class Model:
         error_flag = False
         value = None
 
-        if not isinstance(option, int) or option < 0 or option > 8:
+        if not isinstance(option, int) or option < 1 or option > 9:
             error_flag = True
             Error.set_error_message("Get param "
                                     "invalid option '{}'".format(option))
         else:
             data = {
-                0: self.__config.welcome_message,
-                1: self.__config.wav_original,
-                2: self.__config.wav_modified,
-                3: self.__comb.delay,
-                4: self.__comb.scale,
-                5: self.__flanger.fs,
-                6: self.__flanger.max_delay,
-                7: self.__flanger.scale,
-                8: self.__flanger.rate,
+                1: self.__config.welcome_message,
+                2: self.__config.wav_original,
+                3: self.__config.wav_modified,
+                4: self.__comb.delay,
+                5: self.__comb.scale,
+                6: self.__flanger.fs,
+                7: self.__flanger.max_delay,
+                8: self.__flanger.scale,
+                9: self.__flanger.rate,
             }
             value = data[option]
 
