@@ -28,15 +28,17 @@ class Controller:
             elif option == 2:
                 self.set_new_parameters()
             elif option == 3:
-                self.show_comb_response()
-            elif option == 4:
-                self.play_original_signal()
-            elif option == 5:
-                self.play_flanger_signal()
-            elif option == 6:
-                self.show_flanger_signal()
-            elif option == 7:
                 self.save_current_settings()
+            elif option == 4:
+                self.show_comb_response()
+            elif option == 5:
+                self.show_flanger_signal()
+            elif option == 6:
+                self.play_original_signal()
+            elif option == 7:
+                self.play_flanger_signal()
+            
+            
 
     def exit_program(self):
         self.__view.show_info("Exiting from DSP Controller...")
