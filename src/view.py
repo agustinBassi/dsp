@@ -136,21 +136,14 @@ class View:
         print("\n==================================================\n")
 
     def play_audio(self, audio_file):
-        error_flag = False
         print("\n==================================================\n")
-        try:
-            os.system("aplay %s" % audio_file)
-        except BaseException:
-            logging.error("Error playing wav file: %s" % audio_file)
-            error_flag = True
+        os.system("aplay %s" % audio_file)
         print("\n==================================================\n")
-
-        return error_flag
 
     def show_error(self, error_message):
-        print("\n==================================================\n")
+        print("\n**************************************************\n")
         print("ERROR: %s" % error_message)
-        print("\n==================================================\n")
+        print("\n**************************************************\n")
 
     def show_info(self, error_message):
         print("\n==================================================\n")
@@ -158,10 +151,9 @@ class View:
         print("\n==================================================\n")
 
     @staticmethod
-    def show_program_arguments(log_level, config_file, test_flag):
+    def show_program_arguments(config_file, test_flag):
         print("\n==================================================\n")
         print("Command line arguments:")
-        print("\t- log_level:   %d" % log_level)
         print("\t- config_file: %s" % config_file)
         print("\t- test_flag:   %d" % test_flag)
         print("\n==================================================\n")

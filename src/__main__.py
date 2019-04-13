@@ -5,26 +5,21 @@
 Copyright: Agustin Bassi, 2019.
 License: BSD.
 """
-import logging
 import argparse
 import os
 
-from .model import Model
-from .view import View
-from .controller import Controller
+from model import Model
+from view import View
+from controller import Controller
 
-DEFAULT_LOG_LEVEL = logging.DEBUG
 DEFAULT_CONFIG_FILE = "/config.ini"
 DEFAULT_TEST_FLAG = False
 
 
-def parse_options(log_level, config_file, test_flag):
+def parse_options(config_file, test_flag):
     # Create the parser and putting a title to it
     parser = argparse.ArgumentParser("Running '{}'".format('main.py'))
 
-    parser.add_argument("-v", "--verbosity", type=str,
-                        choices=["ERROR", "WARN", "INFO", "DEBUG"],
-                        help="Verbosity level")
     # store_true makes it a flag
     parser.add_argument("-t", "--test", type=int, default=int(test_flag),
                         choices=[0, 1], help="Test on/off")
@@ -33,19 +28,9 @@ def parse_options(log_level, config_file, test_flag):
         "-c",
         "--config",
         type=str,
-        help="The path of config file, it must be JSON extension")
+        help="The path of config file, it must be ini file format")
 
     arguments = parser.parse_args()
-
-    log_level_map = {
-        "ERROR": logging.ERROR,
-        "WARN": logging.WARN,
-        "INFO": logging.INFO,
-        "DEBUG": logging.DEBUG,
-    }
-
-    if arguments.verbosity is not None:
-        log_level = log_level_map[arguments.verbosity]
 
     if arguments.config is not None:
         config_file = arguments.config
@@ -53,29 +38,22 @@ def parse_options(log_level, config_file, test_flag):
     if arguments.test is not None:
         test_flag = bool(arguments.test)
 
-    return log_level, config_file, test_flag
+    return config_file, test_flag
 
 
 def main():
     """Main method to run DSP Project.
     """
 
-    log_level = DEFAULT_LOG_LEVEL
     config_file = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     config_file += DEFAULT_CONFIG_FILE
     test_flag = DEFAULT_TEST_FLAG
 
-    log_level, config_file, test_flag = parse_options(log_level, config_file,
-                                                      test_flag)
+    config_file, test_flag = parse_options(config_file, test_flag)
 
-    # logging.basicConfig(level = log_level,
-    #                     format = '%(levelname)s - %(message)s')
+    View.show_program_arguments(config_file, test_flag)
 
-    View.show_program_arguments(log_level, config_file, test_flag)
-
-    model = Model(config_file)
-    view = View()
-    controller = Controller(model, view)
+    controller = Controller(Model(config_file), View())
 
     controller.start()
 
