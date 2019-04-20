@@ -31,7 +31,7 @@ class WahWahFilter():
             "WahWahFilter(damping = %f, min_f = %d, max_f = %d, wah_f = %d)" %
              (self.__damping, self.__min_f, self.__max_f, self.__wah_f))
 
-    def create_triangle_waveform(self, lenght, fs):
+    def __create_triangle_waveform(self, lenght, fs):
         # establish signal period from fs and wah wah frecuency
         signal_period = fs/self.__wah_f
         # steps which triangle signal will do, considering the minummum
@@ -60,54 +60,52 @@ class WahWahFilter():
         # return triangle singla.
         return triangle_signal
 
-    def apply_filter(self, x, triangle_signal, fs):
+    def apply_filter(self, original_signal, fs):
+        # Create triangle signal
+        cuttoff_frequencies = self.__create_triangle_waveform(len(original_signal), fs)
         # equation coefficients
-        f1 = 2 * math.sin((math.pi * triangle_signal[0])/fs)
+        f1 = 2 * math.sin((math.pi * cuttoff_frequencies[0])/fs)
         # size of band pass filter
         q1 = 2 * self.__damping
         # initialize filters arrays with zero values
-        yh = numpy.zeros(len(x))
-        yb = numpy.zeros(len(x))
-        yl = numpy.zeros(len(x))
+        highpass = numpy.zeros(len(original_signal))
+        bandpass = numpy.zeros(len(original_signal))
+        lowpass = numpy.zeros(len(original_signal))
         # assign first values
-        yh[0] = x[0]
-        yb[0] = f1 * yh[0]
-        yl[0] = f1 * yb[0]
-
+        highpass[0] = original_signal[0]
+        bandpass[0] = f1 * highpass[0]
+        lowpass[0] = f1 * bandpass[0]
+        # loop to reach the lenght of original signal
+        for n in range (1, len(original_signal)):
+            highpass[n] = original_signal[n] - lowpass[n-1] - (q1 * bandpass[n - 1])
+            bandpass[n] = (f1 * highpass[n]) + bandpass[n - 1]
+            lowpass[n] = (f1 * bandpass[n]) + lowpass[n - 1]
+            # recalculate equation coefficients
+            f1 = 2 * math.sin((math.pi * cuttoff_frequencies[n])/fs)
+        
+        # Obtain the max value of YB
+        max_bandpass = numpy.amax(bandpass)
+        # Establish a relation between max YB value and INT 16 max value
+        normalized_relation = WahWahFilter.MAX_INT16_VALUE/max_bandpass
+        # adapt wahwah signal to original signal amplitude
+        normalized_bandpass = [int(original_signal * normalized_relation) 
+                            for original_signal in bandpass]
+        # create an scipy array to reproduce it then
+        wahwah_signal = array(normalized_bandpass)
+        
+        #############################
+        # STATICS
         print("- F1: {}".format(f1))
         print("- Q1: {}".format(q1))
+        print("- Len cuttoff freqs: {}".format(len(cuttoff_frequencies)))
+        print("- Len highpass: {}".format(len(highpass)))
+        print("- Len bandpass: {}".format(len(bandpass)))
+        print("- Len lowpass: {}".format(len(lowpass)))
+        print("- Max bandpass: {}".format(max_bandpass))
+        print("- Scale relation: {}".format(normalized_relation))
+        #############################
         
-        print("- Len triangle: {}".format(len(triangle_signal)))
-
-        coefficients = []
-
-        for n in range (1, len(x)):
-            yh[n] = x[n] - yl[n-1] - (q1 * yb[n - 1])
-            yb[n] = (f1 * yh[n]) + yb[n - 1]
-            yl[n] = (f1 * yb[n]) + yl[n - 1]
-            # recalculate equation coefficients
-            f1 = 2 * math.sin((math.pi * triangle_signal[n])/fs)
-            coefficients.append(f1)
-
-        print("- Len yh: {}".format(len(yh)))
-        print("- Len yb: {}".format(len(yb)))
-        print("- Len yl: {}".format(len(yl)))
-
-        # normalize signal
-        max_yb = numpy.amax(yb)
-        print("- Max yb: {}".format(max_yb))
-
-        
-        normalized_relation = WahWahFilter.MAX_INT16_VALUE/max_yb
-        print("Scale relation from int32 to YB is: {}".format(normalized_relation))
-
-        # adapt wahwah signal to original signal amplitude
-        # normalized_yb = yb
-        normalized_yb = [int(x * normalized_relation) for x in yb]
-
-        npa = array(normalized_yb)
-
-        return npa, coefficients
+        return wahwah_signal
 
     def plot_triangle_waveform(self, triangle_signal,
                          title="Triangle waveform",
@@ -180,59 +178,17 @@ def main():
 
     fs, original_signal = WahWahFilter.convert_wav_to_raw(ORIGINAL_WAV)
 
-    triangle_signal = wahwah.create_triangle_waveform(len(original_signal), fs)
-
-    WahWahFilter.play_audio(ORIGINAL_WAV)
-
-    # wahwah.plot_triangle_waveform(original_signal)
+    # triangle_signal = wahwah.__create_triangle_waveform(len(original_signal), fs)
     # wahwah.plot_triangle_waveform(triangle_signal)
 
-    wahwah_signal, coefficients = wahwah.apply_filter(original_signal, triangle_signal, fs)
+    wahwah_signal = wahwah.apply_filter(original_signal, fs)
 
-    # wahwah.plot_triangle_waveform(coefficients)
-    # wahwah.plot_wahwah_signals(triangle_signal, coefficients)
+    # wahwah.plot_wahwah_signals(original_signal, wahwah_signal)
 
     WahWahFilter.save_raw_to_wav(wahwah_signal, WAHWAH_WAV, fs)
 
     WahWahFilter.play_audio(WAHWAH_WAV)
-    # playsound(WAHWAH_WAV)
     
 
 if __name__ == "__main__":
     main()
-
-
-# def create_triangle_waveform_old(self, period, amplitude):
-#     section = period // 4
-
-#     # pone sentido a la direccion de la onda
-#     for direction in (1, -1):
-#         # por una seccion pone valores positivos (o crecientes mejor dicho)
-#         for i in range(section):
-#             yield i * (amplitude / section) * direction
-#         # por una seccion pone valores negativos (o decrecientes mejor dicho)    
-#         for i in range(section):
-#             yield (amplitude - (i * (amplitude / section))) * direction
-
-# def create_triangle_waveform2(self):
-#     min_f = 500
-#     max_f = 3000
-#     wah_f = 2000
-#     lenght = 220500
-#     fs = 44100
-
-#     signal_period = fs/wah_f
-
-#     step = int((max_f-min_f)/signal_period)
-#     step *= 2
-
-#     # times = int(1/((lenght/fs)/wah_f))
-#     times = int((fs/signal_period) * (lenght/fs)) # int((lenght/fs) * signal_period)
-    
-#     for i in range (times):
-#         for j in range(min_f, max_f, step):
-#             yield j
-#         for j in range(max_f*-1, min_f*-1, step):
-#             yield j * -1
-
-#     #TODO: Trimear la señal al lenght
