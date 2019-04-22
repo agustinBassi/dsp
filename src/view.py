@@ -50,10 +50,9 @@ class View:
         print("\t|--- 3 - set_wav_modified")
         print("\t|--- 4 - set_comb_delay")
         print("\t|--- 5 - set_comb_scale")
-        print("\t|--- 6 - set_flanger_fs")
-        print("\t|--- 7 - set_flanger_max_delay")
-        print("\t|--- 8 - set_flanger_scale")
-        print("\t|--- 9 - set_flanger_rate")
+        print("\t|--- 6 - set_flanger_max_delay")
+        print("\t|--- 7 - set_flanger_scale")
+        print("\t|--- 8 - set_flanger_rate")
         print("\n==================================================\n")
 
         while True:
@@ -82,12 +81,10 @@ class View:
         elif option == 5:
             value = (float(input("\n\t--- Enter comb scale > ")))
         elif option == 6:
-            value = (int(input("\n\t--- Enter flanger fs > ")))
-        elif option == 7:
             value = (float(input("\n\t--- Enter flanger delay > ")))
-        elif option == 8:
+        elif option == 7:
             value = (float(input("\n\--- tEnter flanger scale > ")))
-        elif option == 9:
+        elif option == 8:
             value = (float(input("\n\--- tEnter flanger rate > ")))
 
         return option, value

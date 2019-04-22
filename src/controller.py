@@ -79,7 +79,7 @@ class Controller:
                                 self.__model.get_param(3)
         try:
             fs, raw_original = Model.convert_wav_to_raw(wav_original_abs_path)
-            raw_modified = self.__model.get_flanger_signal(raw_original)
+            raw_modified = self.__model.get_flanger_signal(raw_original, fs)
             try:
                 Model.save_raw_to_wav(raw_modified, wav_modified_abs_path, fs)
                 self.__view.play_audio(wav_modified_abs_path)
@@ -95,7 +95,7 @@ class Controller:
             wav_original_abs_path = self.__model.get_parent_dir() + "/" + wav_original
 
             fs, raw_original = Model.convert_wav_to_raw(wav_original_abs_path)
-            raw_modified = self.__model.get_flanger_signal(raw_original)
+            raw_modified = self.__model.get_flanger_signal(raw_original, fs)
 
             self.__view.show_info("Plotting flanger signals")
             self.__view.plot_flanger_signals(raw_original, raw_modified)

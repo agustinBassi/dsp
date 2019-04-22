@@ -73,23 +73,22 @@ class FlangerFilter:
     """TODO Comment
     """
 
-    def __init__(self, fs, max_delay, scale, rate):
-        self.__fs = fs
+    def __init__(self, max_delay, scale, rate):
         self.__max_delay = max_delay
         self.__scale = scale
         self.__rate = rate
 
     def __repr__(self):
-        return ("{'fs': '%d', 'max_delay: '%.4f',"
+        return ("{'max_delay: '%.4f',"
                 "'scale': '%.2f', 'rate': '%.2f'}" %
-                (self.__fs, self.__max_delay, self.__scale, self.__rate))
+                (self.__max_delay, self.__scale, self.__rate))
 
     def __str__(self):
-        return ('FlangerFilter(fs = %d hz, max_delay = %.4f seg, '
+        return ('FlangerFilter(max_delay = %.4f seg, '
                 'scale = %.2f, rate = %.2f)'
-                % (self.__fs, self.__max_delay, self.__scale, self.__rate))
+                % (self.__max_delay, self.__scale, self.__rate))
 
-    def apply_filter(self, original_signal):
+    def apply_filter(self, original_signal, fs):
         """Apply flanger signal to raw signal.
 
         All parameters about the filter should be confired before
@@ -102,9 +101,9 @@ class FlangerFilter:
         if len(original_signal) > 0:
             # Create a lambda to call it when process delay later
             def sinus_reference(index): return math.sin(2 * math.pi * index *
-                                                        (self.__rate / self.__fs))
+                                                        (self.__rate / fs))
             # Convert delay in ms to max delay in samples
-            max_delay_sample = round(self.__max_delay * self.__fs)
+            max_delay_sample = round(self.__max_delay * fs)
             # Copy original signal into new one that will be returned
             flanger_signal = ndarray.copy(original_signal)
 
@@ -118,18 +117,6 @@ class FlangerFilter:
                                         original_signal[i - int(current_delay)]))
 
         return flanger_signal
-
-    @property
-    def fs(self):
-        return self.__fs
-
-    @fs.setter
-    def fs(self, fs):
-        self.__fs = fs
-
-    @fs.getter
-    def fs(self):
-        return self.__fs
 
     @property
     def max_delay(self):
@@ -314,7 +301,6 @@ class Model:
     DEFAULT_CONFIG_WAV_MODIFIED = "wavs/tone_1khz_modified.wav"
     DEFAULT_COMB_DELAY = 8
     DEFAULT_COMB_SCALE = 1.0
-    DEFAULT_FLANGER_FS = 44100
     DEFAULT_FLANGER_MAX_DELAY = 0.003
     DEFAULT_FLANGER_SCALE = 0.5
     DEFAULT_FLANGER_RATE = 1.0
@@ -331,7 +317,6 @@ class Model:
                                     Model.DEFAULT_COMB_SCALE)
 
         self.__flanger = FlangerFilter(
-            Model.DEFAULT_FLANGER_FS, 
             Model.DEFAULT_FLANGER_MAX_DELAY, 
             Model.DEFAULT_FLANGER_SCALE, 
             Model.DEFAULT_FLANGER_RATE)
@@ -349,7 +334,6 @@ class Model:
                                  float(config_data['COMB']['comb_scale']))
 
         self.__flanger = FlangerFilter(
-            int(config_data['FLANGER']['flanger_fs']), 
             float(config_data['FLANGER']['flanger_max_delay']), 
             float(config_data['FLANGER']['flanger_scale']), 
             float(config_data['FLANGER']['flanger_rate']))
@@ -363,7 +347,6 @@ class Model:
         config_data['GENERAL']['config_wav_modified'] = self.__config.wav_modified
         config_data['COMB']['comb_delay'] = str(self.__comb.delay)
         config_data['COMB']['comb_scale'] = str(self.__comb.scale)
-        config_data['FLANGER']['flanger_fs'] = str(self.__flanger.fs)
         config_data['FLANGER']['flanger_max_delay'] = str(self.__flanger.max_delay)
         config_data['FLANGER']['flanger_scale'] = str(self.__flanger.scale)
         config_data['FLANGER']['flanger_rate'] = str(self.__flanger.rate)
@@ -378,13 +361,12 @@ class Model:
             "\t- 'config.wav_modified': '%s'\n" \
             "\t- 'comb.delay': %d\n" \
             "\t- 'comb.scale': %.2f\n" \
-            "\t- 'flanger.fs': %d\n" \
             "\t- 'flanger.max_delay': %.3f\n" \
             "\t- 'flanger.scale': %.2f\n" \
             "\t- 'flanger.rate': %.2f\n" % \
             (self.__config.welcome_message, self.__config.wav_original,
              self.__config.wav_modified, self.__comb.delay, self.__comb.scale,
-             self.__flanger.fs, self.__flanger.max_delay, self.__flanger.scale,
+             self.__flanger.max_delay, self.__flanger.scale,
              self.__flanger.rate)
 
         return params
@@ -402,13 +384,11 @@ class Model:
             self.__comb.delay = value
         elif option == 5 and isinstance(value, float):
             self.__comb.scale = value
-        elif option == 6 and isinstance(value, int):
-            self.__flanger.fs = value
-        elif option == 7 and isinstance(value, float):
+        elif option == 6 and isinstance(value, float):
             self.__flanger.max_delay = value
-        elif option == 8 and isinstance(value, float):
+        elif option == 7 and isinstance(value, float):
             self.__flanger.scale = value
-        elif option == 9 and isinstance(value, float):
+        elif option == 8 and isinstance(value, float):
             self.__flanger.rate = value
         else:
             error_flag = True
@@ -425,17 +405,16 @@ class Model:
                 3: self.__config.wav_modified,
                 4: self.__comb.delay,
                 5: self.__comb.scale,
-                6: self.__flanger.fs,
-                7: self.__flanger.max_delay,
-                8: self.__flanger.scale,
-                9: self.__flanger.rate,
+                6: self.__flanger.max_delay,
+                7: self.__flanger.scale,
+                8: self.__flanger.rate,
             }
             value = data[option]
 
         return value
 
-    def get_flanger_signal(self, raw_signal):
-        return self.__flanger.apply_filter(raw_signal)
+    def get_flanger_signal(self, raw_signal, fs):
+        return self.__flanger.apply_filter(raw_signal, fs)
 
     def get_comb_signal(self):
         return self.__comb.get_response_in_frecuency()
