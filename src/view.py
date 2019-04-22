@@ -85,9 +85,9 @@ class View:
         if option == 1:
             value = (str(input("\n--- Enter welcome message > ")))
         elif option == 2:
-            value = (str(input("\n--- Enter wav original > ")))
+            value = (str(input("\n--- Enter wav original path > ")))
         elif option == 3:
-            value = (str(input("\n--- Enter wav modified >")))
+            value = (str(input("\n--- Enter wav modified path >")))
         elif option == 4:
             value = (int(input("\n--- Enter comb delay (int 1 to 100) > ")))
         elif option == 5:

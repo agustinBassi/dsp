@@ -346,7 +346,6 @@ class WahWahFilter():
     def frequency(self):
         return self.__frequency
 
-    
 
 class Model:
 
@@ -355,13 +354,13 @@ class Model:
     DEFAULT_CONFIG_WAV_MODIFIED = "wavs/guitars_modified.wav"
     DEFAULT_COMB_DELAY = 8
     DEFAULT_COMB_SCALE = 1.0
-    DEFAULT_FLANGER_MAX_DELAY = 0.003
+    DEFAULT_FLANGER_MAX_DELAY = 0.005
     DEFAULT_FLANGER_SCALE = 0.5
     DEFAULT_FLANGER_RATE = 1.0
     DEFAULT_WAHWAH_DAMPING = 0.05
     DEFAULT_WAHWAH_MIN_CUTOFF = 500
     DEFAULT_WAHWAH_MAX_CUTOFF = 3000
-    DEFAULT_WAHWAH_FREQUENCY = 1.1
+    DEFAULT_WAHWAH_FREQUENCY = 0.5
 
     def __init__(self, db):
         self.__db = db
@@ -449,9 +448,9 @@ class Model:
             self.__comb.scale = value
         elif option == 6 and isinstance(value, float) and value >= 0.001 and value <= 0.02:
             self.__flanger.max_delay = value
-        elif option == 7 and isinstance(value, float) and value >= 0.0 and value <= 1.0:
+        elif option == 7 and isinstance(value, float) and value >= 0.1 and value <= 1.0:
             self.__flanger.scale = value
-        elif option == 8 and isinstance(value, float) and value >= 0 and value <= 5.0:
+        elif option == 8 and isinstance(value, float) and value >= 0.1 and value <= 5.0:
             self.__flanger.rate = value
         elif option == 9 and isinstance(value, float) and value >= 0.01 and value <= 0.07:
             self.__wahwah.damping = value
