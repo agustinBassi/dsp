@@ -21,18 +21,17 @@ class View:
         print("\t 3 - Save current values into config file")
         print("\t 4 - Plot response in frecuency of comb filter")
         print("\t 5 - Plot flanger signal over original signal")
-        print("\t 6 - Plot wahwah triangle signal")
-        print("\t 7 - Plot wahwah signal over original signal")
-        print("\t 8 - Play original wav audio")
-        print("\t 9 - Play flanger wav audio")
-        print("\t10 - Play wahwah wav audio")
-        print("\t11 - Play flanger & wahwah concatenated wav audio")
-        print("\t12 - Restore default values")
+        print("\t 6 - Plot wahwah signal over original signal")
+        print("\t 7 - Play original wav audio")
+        print("\t 8 - Play flanger wav audio")
+        print("\t 9 - Play wahwah wav audio")
+        print("\t10 - Play flanger & wahwah concatenated wav audio")
+        print("\t11 - Restore default values")
         print("\n==================================================\n")
 
         while True:
             try:
-                option = int(input("--- Enter option from 0 to 12 > Option: "))
+                option = int(input("--- Enter option from 0 to 11 > Option: "))
                 print("\n==================================================\n")
                 if (option >= 0 and option <= 12):
                     break
@@ -41,7 +40,7 @@ class View:
                     raise ValueError
             except ValueError:
                 print("\n++++++++++++++++++++++++++++++++++++++++++++++++++\n")
-                print("ERROR: Type a valid menu option from 0 to 12!")
+                print("ERROR: Type a valid menu option from 0 to 11!")
                 print("\n++++++++++++++++++++++++++++++++++++++++++++++++++\n")
 
         return option

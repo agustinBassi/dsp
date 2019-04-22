@@ -34,19 +34,17 @@ class Controller:
             elif option == 5:
                 self.op5_plot_flanger_signal()
             elif option == 6:
-                self.op6_plot_wahwah_triangle_signal()
+                self.op6_plot_wahwah_filter()
             elif option == 7:
-                self.op7_plot_wahwah_filter()
+                self.op7_play_original_signal()
             elif option == 8:
-                self.op8_play_original_signal()
+                self.op8_play_flanger_signal()
             elif option == 9:
-                self.op9_play_flanger_signal()
+                self.op9_play_wahwah_signal()
             elif option == 10:
-                self.op10_play_wahwah_signal()
+                self.op10_play_flanger_wahwah_signal()
             elif option == 11:
-                self.op11_play_flanger_wahwah_signal()
-            elif option == 12:
-                self.op12_restore_default_values()
+                self.op11_restore_default_values()
             
 
     def op0_exit_program(self):
@@ -92,13 +90,22 @@ class Controller:
         else:
             self.__view.show_error("Index 2 for obtain wavs original is incorrect")
 
-    def op6_plot_wahwah_triangle_signal(self):
-        self.__view.show_info("Plot wahwah triangle signal")
+    def op6_plot_wahwah_filter(self):
+        wav_original = self.__model.get_param(2)
 
-    def op7_plot_wahwah_filter(self):
-        self.__view.show_info("Plot wahwah filter signal")
+        if wav_original != None:
+            wav_original_abs_path = self.__model.get_parent_dir() + "/" + wav_original
 
-    def op8_play_original_signal(self):
+            fs, raw_original = Model.convert_wav_to_raw(wav_original_abs_path)
+            raw_modified = self.__model.get_wahwah_signal(raw_original, fs)
+
+            self.__view.show_info("Plotting wahwah signals")
+            self.__view.plot_wahwah_signals(raw_original, raw_modified)
+
+        else:
+            self.__view.show_error("Index 2 for obtain wavs original is incorrect")
+
+    def op7_play_original_signal(self):
         wav_original = self.__model.get_param(2)
         if wav_original != None:
             wav_original_abs_path = self.__model.get_parent_dir() + "/" + wav_original
@@ -109,7 +116,7 @@ class Controller:
         else:
             self.__view.show_error("The index 2 for obtain original wav is incorrect")
 
-    def op9_play_flanger_signal(self):
+    def op8_play_flanger_signal(self):
         wav_original_abs_path = self.__model.get_parent_dir() + "/" + \
                                 self.__model.get_param(2)
         wav_modified_abs_path = self.__model.get_parent_dir() + "/" + \
@@ -125,14 +132,43 @@ class Controller:
         except:
             self.__view.show_error("Error getting original signal or flanger signal")
 
-    def op10_play_wahwah_signal(self):
-        self.__view.show_info("Play wahwah wav audio")
+    def op9_play_wahwah_signal(self):
+        # self.__view.show_info("Play wahwah wav audio")
+        wav_original_abs_path = self.__model.get_parent_dir() + "/" + \
+                                self.__model.get_param(2)
+        wav_modified_abs_path = self.__model.get_parent_dir() + "/" + \
+                                self.__model.get_param(3)
+        try:
+            fs, raw_original = Model.convert_wav_to_raw(wav_original_abs_path)
+            raw_modified = self.__model.get_wahwah_signal(raw_original, fs)
+            try:
+                Model.save_raw_to_wav(raw_modified, wav_modified_abs_path, fs)
+                self.__view.play_audio(wav_modified_abs_path)
+            except:
+                self.__view.show_error("Error converting or playing wahwah signal wav")
+        except:
+            self.__view.show_error("Error getting original signal or wahwah signal")
 
-    def op11_play_flanger_wahwah_signal(self):
-        self.__view.show_info("Play flanger & wahwah concatenated wav audio")
+    def op10_play_flanger_wahwah_signal(self):
+        wav_original_abs_path = self.__model.get_parent_dir() + "/" + \
+                                self.__model.get_param(2)
+        wav_modified_abs_path = self.__model.get_parent_dir() + "/" + \
+                                self.__model.get_param(3)
+        try:
+            fs, raw_original = Model.convert_wav_to_raw(wav_original_abs_path)
+            raw_flanger = self.__model.get_flanger_signal(raw_original, fs)
+            raw_modified = self.__model.get_wahwah_signal(raw_flanger, fs)
+            try:
+                Model.save_raw_to_wav(raw_modified, wav_modified_abs_path, fs)
+                self.__view.play_audio(wav_modified_abs_path)
+            except:
+                self.__view.show_error("Error converting or playing wahwah signal wav")
+        except:
+            self.__view.show_error("Error getting original signal or wahwah signal")
 
-    def op12_restore_default_values(self):
+    def op11_restore_default_values(self):
         self.__view.show_info("op12_restore_default_values")
+        self.__model.restore_default_values()
 
 
     

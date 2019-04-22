@@ -231,7 +231,7 @@ class WahWahFilter():
             "WahWahFilter(damping = %f, min_f = %d, max_f = %d, wah_f = %d)" %
              (self.__damping, self.__min_cutoff, self.__max_cutoff, self.__frequency))
 
-    def _create_triangle_waveform(self, original_signal_lenght, fs):
+    def __create_triangle_waveform(self, original_signal_lenght, fs):
         # establish signal period from fs and wah wah frecuency
         signal_period = fs/self.__frequency
         # steps which triangle signal will do, considering the minummum
@@ -267,7 +267,7 @@ class WahWahFilter():
 
     def apply_filter(self, original_signal, fs):
         # Create triangle signal
-        cuttoff_frequencies = self._create_triangle_waveform(len(original_signal), fs)
+        cuttoff_frequencies = self.__create_triangle_waveform(len(original_signal), fs)
         # equation coefficients
         f1 = 2 * math.sin((math.pi * cuttoff_frequencies[0])/fs)
         # size of band pass filter
@@ -351,8 +351,8 @@ class WahWahFilter():
 class Model:
 
     DEFAULT_CONFIG_WELCOME_MESSAGE = "DSP Controller!"
-    DEFAULT_CONFIG_WAV_ORIGINAL = "wavs/tone_1khz.wav"
-    DEFAULT_CONFIG_WAV_MODIFIED = "wavs/tone_1khz_modified.wav"
+    DEFAULT_CONFIG_WAV_ORIGINAL = "wavs/guitars.wav"
+    DEFAULT_CONFIG_WAV_MODIFIED = "wavs/guitars_modified.wav"
     DEFAULT_COMB_DELAY = 8
     DEFAULT_COMB_SCALE = 1.0
     DEFAULT_FLANGER_MAX_DELAY = 0.003
@@ -366,24 +366,7 @@ class Model:
     def __init__(self, db):
         self.__db = db
         # Set default parameters
-        self.__config = Configuration(
-            Model.DEFAULT_CONFIG_WELCOME_MESSAGE,
-            Model.DEFAULT_CONFIG_WAV_ORIGINAL,
-            Model.DEFAULT_CONFIG_WAV_MODIFIED)
-
-        self.__comb = CombFilter(Model.DEFAULT_COMB_DELAY,
-                                    Model.DEFAULT_COMB_SCALE)
-
-        self.__flanger = FlangerFilter(
-            Model.DEFAULT_FLANGER_MAX_DELAY, 
-            Model.DEFAULT_FLANGER_SCALE, 
-            Model.DEFAULT_FLANGER_RATE)
-
-        self.__wahwah = WahWahFilter(
-            Model.DEFAULT_WAHWAH_DAMPING, 
-            Model.DEFAULT_WAHWAH_MIN_CUTOFF,
-            Model.DEFAULT_WAHWAH_MAX_CUTOFF, 
-            Model.DEFAULT_WAHWAH_FREQUENCY)
+        self.__load_default_values()
 
     def load_data_from_db(self):
         config_data = configparser.ConfigParser()
@@ -505,15 +488,42 @@ class Model:
 
         return value
 
+    
+    def get_comb_signal(self):
+        return self.__comb.get_response_in_frecuency()
+
     def get_flanger_signal(self, raw_signal, fs):
         return self.__flanger.apply_filter(raw_signal, fs)
 
-    def get_comb_signal(self):
-        return self.__comb.get_response_in_frecuency()
+    def get_wahwah_signal(self, raw_signal, fs):
+        return self.__wahwah.apply_filter(raw_signal, fs)
 
     def get_parent_dir(self):
         return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+    def __load_default_values(self):
+        self.__config = Configuration(
+            Model.DEFAULT_CONFIG_WELCOME_MESSAGE,
+            Model.DEFAULT_CONFIG_WAV_ORIGINAL,
+            Model.DEFAULT_CONFIG_WAV_MODIFIED)
+
+        self.__comb = CombFilter(Model.DEFAULT_COMB_DELAY,
+                                    Model.DEFAULT_COMB_SCALE)
+
+        self.__flanger = FlangerFilter(
+            Model.DEFAULT_FLANGER_MAX_DELAY, 
+            Model.DEFAULT_FLANGER_SCALE, 
+            Model.DEFAULT_FLANGER_RATE)
+
+        self.__wahwah = WahWahFilter(
+            Model.DEFAULT_WAHWAH_DAMPING, 
+            Model.DEFAULT_WAHWAH_MIN_CUTOFF,
+            Model.DEFAULT_WAHWAH_MAX_CUTOFF, 
+            Model.DEFAULT_WAHWAH_FREQUENCY)
+
+    def restore_default_values(self):
+        self.__load_default_values()
+        self.save_data_to_db()
 
     @staticmethod
     def save_raw_to_wav(raw_data, wav_file, fs):
