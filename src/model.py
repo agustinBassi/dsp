@@ -494,6 +494,7 @@ class Model:
 
         return value
 
+    
     def get_comb_signal(self):
         return self.__comb.get_response_in_frecuency()
 

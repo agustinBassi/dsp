@@ -3,10 +3,10 @@ import sys
 import unittest
 
 from src.model import Configuration
-from src.model import FlangerFilter
 from src.model import CombFilter
+from src.model import FlangerFilter
+from src.model import WahWahFilter
 from src.model import Model
-from src.model import Error
 
 
 class TestConfiguration(unittest.TestCase):
@@ -48,52 +48,6 @@ class TestConfiguration(unittest.TestCase):
         self.assertEqual("cc", self.config.wav_modified)
 
 
-class TestFlangerFilter(unittest.TestCase):
-
-    @classmethod
-    def setUpClass(cls):
-        pass
-
-    @classmethod
-    def tearDownClass(cls):
-        pass
-
-    def setUp(self):
-        self.flanger = FlangerFilter(1, 2.0, 3.0, 4.0)
-
-    def tearDown(self):
-        pass
-
-    def test_repr(self):
-        expected_text = "{'fs': '1', 'max_delay: '2.0000'," \
-            "'scale': '3.00', 'rate': '4.00'}"
-        self.assertEqual(repr(self.flanger), expected_text)
-
-    def test_str(self):
-        expected_text = 'FlangerFilter(fs = 1 hz, max_delay = 2.0000 seg, ' \
-                        'scale = 3.00, rate = 4.00)'
-        self.assertEqual(str(self.flanger), expected_text)
-
-    def test_apply_filter(self):
-        pass
-
-    def test_fs(self):
-        self.flanger.fs = 11
-        self.assertEqual(self.flanger.fs, 11)
-
-    def test_max_delay(self):
-        self.flanger.max_delay = 2.2
-        self.assertEqual(self.flanger.max_delay, 2.2)
-
-    def test_scale(self):
-        self.flanger.scale = 3.3
-        self.assertEqual(self.flanger.scale, 3.3)
-
-    def test_rate(self):
-        self.flanger.rate = 4.4
-        self.assertEqual(self.flanger.rate, 4.4)
-
-
 class TestCombFilter(unittest.TestCase):
 
     @classmethod
@@ -127,7 +81,7 @@ class TestCombFilter(unittest.TestCase):
         self.assertEqual(self.comb.scale, 2.2)
 
 
-class TestError(unittest.TestCase):
+class TestFlangerFilter(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -138,17 +92,35 @@ class TestError(unittest.TestCase):
         pass
 
     def setUp(self):
-        pass
+        self.flanger = FlangerFilter(2.0, 3.0, 4.0)
 
     def tearDown(self):
         pass
 
-    def test_error_message(self):
-        Error.set_error_message("Error 1")
-        self.assertEqual(Error.get_error_message(), "Error 1")
+    def test_repr(self):
+        expected_text = "{'max_delay: '2.0000'," \
+            "'scale': '3.00', 'rate': '4.00'}"
+        self.assertEqual(repr(self.flanger), expected_text)
 
-        Error.set_error_message("Error 2")
-        self.assertNotEqual(Error.get_error_message(), "Error 1")
+    def test_str(self):
+        expected_text = 'FlangerFilter(max_delay = 2.0000 seg, ' \
+                        'scale = 3.00, rate = 4.00)'
+        self.assertEqual(str(self.flanger), expected_text)
+
+    def test_apply_filter(self):
+        pass
+
+    def test_max_delay(self):
+        self.flanger.max_delay = 2.2
+        self.assertEqual(self.flanger.max_delay, 2.2)
+
+    def test_scale(self):
+        self.flanger.scale = 3.3
+        self.assertEqual(self.flanger.scale, 3.3)
+
+    def test_rate(self):
+        self.flanger.rate = 4.4
+        self.assertEqual(self.flanger.rate, 4.4)
 
 
 class TestModel(unittest.TestCase):
@@ -174,69 +146,99 @@ class TestModel(unittest.TestCase):
 
     def test_load_data_from_db(self):
         # passing an invalid path and check if return error = true
-        model = Model(TestModel.ERROR_FIXTURE_PATH)
-        error_flag = model.load_data_from_db()
-        self.assertEqual(error_flag, True)
-        del(model)
+        error_flag = False
+        try:
+            model = Model(TestModel.ERROR_FIXTURE_PATH)
+            model.load_data_from_db()
+        except:
+            error_flag = True
+        finally:
+            self.assertEqual(error_flag, True)
+            del(model)
 
         # passing an valid path and check if return error = false
-        model = Model(TestModel.config_file)
-        error_flag = model.load_data_from_db()
-        self.assertEqual(error_flag, False)
-        del(model)
+        error_flag = False
+        try:
+            model = Model(TestModel.config_file)
+            model.load_data_from_db()
+        except:
+            error_flag = True
+        finally:
+            self.assertEqual(error_flag, False)
+            del(model)
 
     def test_save_data_to_db(self):
         # passing an invalid path and check if return error = true
-        model = Model(TestModel.ERROR_FIXTURE_PATH)
-        model.load_data_from_db()
-        error_flag = model.save_data_to_db()
-        self.assertEqual(error_flag, True)
-        del(model)
+        error_flag = False
+        try:
+            model = Model(TestModel.ERROR_FIXTURE_PATH)
+            model.save_data_to_db()
+        except:
+            error_flag = True
+        finally:
+            self.assertEqual(error_flag, True)
+            del(model)
 
         # passing an valid path and check if return error = false
-        model = Model(TestModel.config_file)
-        model.load_data_from_db()
-        error_flag = model.save_data_to_db()
-        self.assertEqual(error_flag, False)
-        del(model)
+        error_flag = False
+        try:
+            model = Model(TestModel.config_file)
+            # model.save_data_to_db()
+        except:
+            error_flag = True
+        finally:
+            self.assertEqual(error_flag, False)
+            del(model)
 
     def test_get_all_params(self):
         success_text = \
             "\t- 'config.welcome_message': 'DSP Controller!'\n" \
-            "\t- 'config.wav_original': 'wavs/tone_1khz.wav'\n" \
-            "\t- 'config.wav_modified': 'wavs/tone_1khz_modified.wav'\n" \
+            "\t- 'config.wav_original': 'wavs/guitars.wav'\n" \
+            "\t- 'config.wav_modified': 'wavs/guitars_filtered.wav'\n" \
             "\t- 'comb.delay': 8\n" \
             "\t- 'comb.scale': 1.00\n" \
-            "\t- 'flanger.fs': 44101\n" \
-            "\t- 'flanger.max_delay': 0.007\n" \
-            "\t- 'flanger.scale': 0.54\n" \
-            "\t- 'flanger.rate': 2.51\n"
+            "\t- 'flanger.max_delay': 0.005\n" \
+            "\t- 'flanger.scale': 0.50\n" \
+            "\t- 'flanger.rate': 1.00\n" \
+            "\t- 'wahwah.damping': 0.05\n" \
+            "\t- 'wahwah.min_cutoff': 500\n" \
+            "\t- 'wahwah.max_cutoff': 3000\n" \
+            "\t- 'wahwah.frequency': 0.50\n"
         error_text = \
             "\t- 'config.welcome_message': 'DSP Controller!'\n" \
-            "\t- 'config.wav_original': 'wavs/tone_1khz.wav'\n" \
-            "\t- 'config.wav_modified': 'wavs/tone_1khz_modified.wav'\n" \
+            "\t- 'config.wav_original': 'wavs/guitars.wav'\n" \
+            "\t- 'config.wav_modified': 'wavs/guitars_filtered.wav'\n" \
             "\t- 'comb.delay': 8\n" \
             "\t- 'comb.scale': 1.00\n" \
-            "\t- 'flanger.fs': 44100\n" \
-            "\t- 'flanger.max_delay': 0.003\n" \
+            "\t- 'flanger.max_delay': 0.005\n" \
             "\t- 'flanger.scale': 0.50\n" \
-            "\t- 'flanger.rate': 1.00\n"
+            "\t- 'flanger.rate': 1.00\n" \
+            "\t- 'wahwah.damping': 0.05\n" \
+            "\t- 'wahwah.min_cutoff': 500\n" \
+            "\t- 'wahwah.max_cutoff': 3000\n" \
+            "\t- 'wahwah.frequency': 0.60\n"
 
-        model = Model(TestModel.config_file)
-        error_flag = model.load_data_from_db()
-        if error_flag:
+        # set this value to check grater values than default
+        self.maxDiff = None
+        # passing an invalid path and check if return error = true
+        try:
+            model = Model(TestModel.ERROR_FIXTURE_PATH)
+            model.load_data_from_db()
+        except:
+            pass
+        finally:
             self.assertEqual(model.get_all_params(), error_text)
-        else:
-            self.assertEqual(model.get_all_params(), success_text)
-        del(model)
+            del(model)
 
-        model = Model(TestModel.ERROR_FIXTURE_PATH)
-        error_flag = model.load_data_from_db()
-        if error_flag:
-            self.assertEqual(model.get_all_params(), error_text)
-        else:
+        # passing an valid path and check if return error = false
+        try:
+            model = Model(TestModel.config_file)
+            model.load_data_from_db()
+        except:
+            pass
+        finally:
             self.assertEqual(model.get_all_params(), success_text)
-        del(model)
+            del(model)
 
     def test_get_param_incorrects(self):
         values_to_test = ["a", 2.1, ["a", "b"], ("a", "b"), {"a": "b"},
@@ -247,29 +249,32 @@ class TestModel(unittest.TestCase):
         # test option from every value_to_test
         for i in range(len(values_to_test)):
             # get_param start from 1 to get values
-            error_flag, _ = model.get_param(values_to_test[i])
-            self.assertEqual(error_flag, True)
+            value = model.get_param(values_to_test[i])
+            self.assertEqual(value, None)
 
     def test_get_param_corrects(self):
-        values_to_test = ("DSP Controller!",
-                          "wavs/tone_1khz.wav",
-                          "wavs/tone_1khz_modified.wav",
+        values_to_test = ("DSP Controller!", "wavs/guitars.wav", "wavs/guitars_filtered.wav",
                           8, 1.0,
-                          44100, 0.003, 0.5, 1.0)
+                          0.005, 0.5, 1.0,
+                          0.05, 500, 3000, 0.5)
 
-        model = Model(TestModel.ERROR_FIXTURE_PATH)
+        model = Model(TestModel.config_file)
+        model.load_data_from_db()
 
         # test option from every value_to_test
         for i in range(len(values_to_test)):
             # get_param start from 1 to get values
-            error_flag, value = model.get_param(i + 1)
-            self.assertEqual(error_flag, False)
+            value = model.get_param(i + 1)
             self.assertEqual(value, values_to_test[i])
 
     def test_set_param_incorrects(self):
-        values_to_test = (2, 2, 2, "2", 2, "2", 2, 2, 2)
+        values_to_test = (2, 2, 2, 
+                          "2", 2, 
+                          "2", 2, 2,
+                          2, "2", "2", 2)
 
         model = Model(TestModel.config_file)
+        model.load_data_from_db()
 
         # test option from every value_to_test
         for i in range(len(values_to_test)):
@@ -278,27 +283,60 @@ class TestModel(unittest.TestCase):
             self.assertEqual(error_flag, True)
 
     def test_set_param_corrects(self):
-        values_to_test = ("a", "a", "a", 123, 1.1, 123, 1.1, 1.1, 1.1)
+        values_to_test = ("a", "a", "a", 
+                          50, 50.1, 
+                          0.01, 0.5, 2.5,
+                          0.05, 500, 3500, 0.5)
 
-        model = Model(TestModel.ERROR_FIXTURE_PATH)
+        model = Model(TestModel.config_file)
 
         # test option from every value_to_test
         for i in range(len(values_to_test)):
             # get_param start from 1 to get values
             error_flag = model.set_param(i + 1, values_to_test[i])
             self.assertEqual(error_flag, False)
-            error_flag, value = model.get_param(i + 1)
-            self.assertEqual(error_flag, False)
+            value = model.get_param(i + 1)
             self.assertEqual(value, values_to_test[i])
 
     def test_comb_signal(self):
-        comb_filter = CombFilter(8, 1)
+        comb_filter = CombFilter(8, 1.0)
         comb_signal = comb_filter.get_response_in_frecuency()
 
-        model = Model(TestModel.ERROR_FIXTURE_PATH)
+        model = Model(TestModel.config_file)
         comb_signal_model = model.get_comb_signal()
 
         self.assertEqual(comb_signal_model.all(), comb_signal.all())
+
+    def test_flanger_signal(self):
+        model = Model(TestModel.config_file)
+        original_wav_path = model.get_parent_dir() + "/wavs/guitars.wav"
+        fs, original_signal = Model.convert_wav_to_raw(original_wav_path)
+
+        flanger_filter = FlangerFilter(0.005, 0.5, 1.0)
+        flanger_signal = flanger_filter.apply_filter(original_signal, fs)
+
+        model_flanger_signal = model.get_flanger_signal(original_signal, fs)
+
+        self.assertEqual(model_flanger_signal.all(), flanger_signal.all())
+
+    def test_wahwah_signal(self):
+        model = Model(TestModel.config_file)
+        original_wav_path = model.get_parent_dir() + "/wavs/guitars.wav"
+        fs, original_signal = Model.convert_wav_to_raw(original_wav_path)
+
+        wahwah_filter = WahWahFilter(0.05, 500, 3000, 0.5)
+        wahwah_signal = wahwah_filter.apply_filter(original_signal, fs)
+
+        model_wahwah_signal = model.get_flanger_signal(original_signal, fs)
+
+        self.assertEqual(model_wahwah_signal.all(), wahwah_signal.all())
+
+    def test_get_parent_dir(self):
+        model = Model(TestModel.config_file)
+        test_parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        model_parent_dir = model.get_parent_dir()
+
+        self.assertEqual(test_parent_dir, model_parent_dir)
 
 
 # TODO SECTION
