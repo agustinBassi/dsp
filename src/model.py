@@ -351,7 +351,7 @@ class Model:
 
     DEFAULT_CONFIG_WELCOME_MESSAGE = "DSP Controller!"
     DEFAULT_CONFIG_WAV_ORIGINAL = "wavs/guitars.wav"
-    DEFAULT_CONFIG_WAV_MODIFIED = "wavs/guitars_modified.wav"
+    DEFAULT_CONFIG_WAV_MODIFIED = "wavs/guitars_filtered.wav"
     DEFAULT_COMB_DELAY = 8
     DEFAULT_COMB_SCALE = 1.0
     DEFAULT_FLANGER_MAX_DELAY = 0.005
