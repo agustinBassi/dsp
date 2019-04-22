@@ -443,23 +443,23 @@ class Model:
             self.__config.wav_original = value
         elif option == 3 and isinstance(value, str):
             self.__config.wav_modified = value
-        elif option == 4 and isinstance(value, int):
+        elif option == 4 and isinstance(value, int) and value >= 1 and value <= 100:
             self.__comb.delay = value
-        elif option == 5 and isinstance(value, float):
+        elif option == 5 and isinstance(value, float) and value >= 1.0 and value <= 100.0:
             self.__comb.scale = value
-        elif option == 6 and isinstance(value, float):
+        elif option == 6 and isinstance(value, float) and value >= 0.001 and value <= 0.02:
             self.__flanger.max_delay = value
-        elif option == 7 and isinstance(value, float):
+        elif option == 7 and isinstance(value, float) and value >= 0.0 and value <= 1.0:
             self.__flanger.scale = value
-        elif option == 8 and isinstance(value, float):
+        elif option == 8 and isinstance(value, float) and value >= 0 and value <= 5.0:
             self.__flanger.rate = value
-        elif option == 9 and isinstance(value, float):
+        elif option == 9 and isinstance(value, float) and value >= 0.01 and value <= 0.07:
             self.__wahwah.damping = value
-        elif option == 10 and isinstance(value, int):
+        elif option == 10 and isinstance(value, int) and value >= 100 and value <= 1000:
             self.__wahwah.min_cutoff = value
-        elif option == 11 and isinstance(value, int):
+        elif option == 11 and isinstance(value, int) and value >= 2500 and value <= 4500:
             self.__wahwah.max_cutoff = value
-        elif option == 12 and isinstance(value, float):
+        elif option == 12 and isinstance(value, float) and value >= 0.1 and value <= 2.0:
             self.__wahwah.frequency = value
         else:
             error_flag = True

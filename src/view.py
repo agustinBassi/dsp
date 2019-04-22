@@ -15,25 +15,25 @@ class View:
     def show_main_menu(self):
         print("\n==================================================\n")
         print("\nSelect one of options below:\n")
-        print("\t 0 - Exit program")
-        print("\t 1 - Show current configuration parameters")
-        print("\t 2 - Update configuration parameters")
-        print("\t 3 - Save current values into config file")
-        print("\t 4 - Plot response in frecuency of comb filter")
-        print("\t 5 - Plot flanger signal over original signal")
-        print("\t 6 - Plot wahwah signal over original signal")
-        print("\t 7 - Play original wav audio")
-        print("\t 8 - Play flanger wav audio")
-        print("\t 9 - Play wahwah wav audio")
-        print("\t10 - Play flanger & wahwah concatenated wav audio")
-        print("\t11 - Restore default values")
+        print("\t(  0 ) --- Exit program")
+        print("\t(  1 ) --- Show current configuration parameters")
+        print("\t(  2 ) --- Update configuration parameters")
+        print("\t(  3 ) --- Save current values into config file")
+        print("\t(  4 ) --- Plot response in frecuency of comb filter")
+        print("\t(  5 ) --- Plot flanger signal over original signal")
+        print("\t(  6 ) --- Plot wahwah signal over original signal")
+        print("\t(  7 ) --- Play original wav audio")
+        print("\t(  8 ) --- Play flanger wav audio")
+        print("\t(  9 ) --- Play wahwah wav audio")
+        print("\t( 10 ) --- Play flanger & wahwah concatenated wav audio")
+        print("\t( 11 ) --- Restore default values")
         print("\n==================================================\n")
 
         while True:
             try:
                 option = int(input("--- Enter option from 0 to 11 > Option: "))
                 print("\n==================================================\n")
-                if (option >= 0 and option <= 12):
+                if (option >= 0 and option <= 11):
                     break
                 else:
                     print("\n==================================================\n")
@@ -48,19 +48,23 @@ class View:
     def show_settings_menu(self):
         print("\n==================================================\n")
         print("\nSelect one of options below:\n")
-        print("\t|---  0 - no modify any parameter")
-        print("\t|---  1 - set_welcome_message")
-        print("\t|---  2 - set_wav_original")
-        print("\t|---  3 - set_wav_modified")
-        print("\t|---  4 - set_comb_delay")
-        print("\t|---  5 - set_comb_scale")
-        print("\t|---  6 - set_flanger_max_delay")
-        print("\t|---  7 - set_flanger_scale")
-        print("\t|---  8 - set_flanger_rate")
-        print("\t|---  9 - set_wahwah_damping")
-        print("\t|--- 10 - set_wahwah_min_cutoff")
-        print("\t|--- 11 - set_wahwah_max_cutoff")
-        print("\t|--- 12 - set_wahwah_frequency")
+        print("\t|--- (  0 ) - no modify any parameter")
+        print("\t|")
+        print("\t|--- (  1 ) - CONFIG  --> welcome_message")
+        print("\t|--- (  2 ) - CONFIG  --> wav_original")
+        print("\t|--- (  3 ) - CONFIG  --> wav_modified")
+        print("\t|")
+        print("\t|--- (  4 ) - COMB    --> delay")
+        print("\t|--- (  5 ) - COMB    --> scale")
+        print("\t|")
+        print("\t|--- (  6 ) - FLANGER --> max_delay")
+        print("\t|--- (  7 ) - FLANGER --> scale")
+        print("\t|--- (  8 ) - FLANGER --> rate")
+        print("\t|")
+        print("\t|--- (  9 ) - WAHWAH  --> damping")
+        print("\t|--- ( 10 ) - WAHWAH  --> min_cutoff")
+        print("\t|--- ( 11 ) - WAHWAH  --> max_cutoff")
+        print("\t|--- ( 12 ) - WAHWAH  --> frequency")
         print("\n==================================================\n")
 
         while True:
@@ -79,29 +83,29 @@ class View:
         value = None
 
         if option == 1:
-            value = (str(input("\n\t--- Enter welcome message > ")))
+            value = (str(input("\n--- Enter welcome message > ")))
         elif option == 2:
-            value = (str(input("\n\t--- Enter wav original > ")))
+            value = (str(input("\n--- Enter wav original > ")))
         elif option == 3:
-            value = (str(input("\n\t--- Enter wav modified >")))
+            value = (str(input("\n--- Enter wav modified >")))
         elif option == 4:
-            value = (int(input("\n\t--- Enter comb delay > ")))
+            value = (int(input("\n--- Enter comb delay (int 1 to 100) > ")))
         elif option == 5:
-            value = (float(input("\n\t--- Enter comb scale > ")))
+            value = (float(input("\n--- Enter comb scale (float 0 to 100) > ")))
         elif option == 6:
-            value = (float(input("\n\t--- Enter flanger delay > ")))
+            value = (float(input("\n--- Enter flanger delay (float 0.001 to 0.020) > ")))
         elif option == 7:
-            value = (float(input("\n\t--- Enter flanger scale > ")))
+            value = (float(input("\n--- Enter flanger scale (float 0 to 1.0) > ")))
         elif option == 8:
-            value = (float(input("\n\t--- Enter flanger rate > ")))
+            value = (float(input("\n--- Enter flanger rate (float 0 to 5.0) > ")))
         elif option == 9:
-            value = (float(input("\n\t--- Enter wahwah damping > ")))
+            value = (float(input("\n--- Enter wahwah damping (float 0.01 to 0.07) > ")))
         elif option == 10:
-            value = (int(input("\n\t--- Enter wahwah min cutoff > ")))
+            value = (int(input("\n--- Enter wahwah min cutoff (int 100 to 100) > ")))
         elif option == 11:
-            value = (int(input("\n\t--- Enter wahwah max cutoff > ")))
+            value = (int(input("\n--- Enter wahwah max cutoff int (2500 to 4500) > ")))
         elif option == 12:
-            value = (float(input("\n\t--- Enter wahwah frequency > ")))
+            value = (float(input("\n--- Enter wahwah frequency (float 0.1 to 2.0) > ")))
 
         return option, value
 
