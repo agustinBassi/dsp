@@ -14,7 +14,7 @@ from playsound import playsound
 class WahWahFilter():
 
     # For limit the amplitude of wah wah signal for int16 wav file format
-    MAX_INT16_VALUE = 32000
+    MAX_INT16_VALUE = 32767
 
     def __init__(self, damping, min_f, max_f, wah_f):
         self.__damping = damping
@@ -31,25 +31,28 @@ class WahWahFilter():
             "WahWahFilter(damping = %f, min_f = %d, max_f = %d, wah_f = %d)" %
              (self.__damping, self.__min_f, self.__max_f, self.__wah_f))
 
-    def create_triangle_waveform(self, lenght, fs):
+    def _create_triangle_waveform(self, original_signal_lenght, fs):
         # establish signal period from fs and wah wah frecuency
         signal_period = fs/self.__wah_f
         # steps which triangle signal will do, considering the minummum
         # and max value that it has to reach. Also signal period is taken in account 
         # and finally it is multiplied by 2, because the signal will have to 
-        # increase and decrease it's value in 1 signal period
-        step = float( ((self.__max_f - self.__min_f)/signal_period) * 2 )
+        # increase and decrease it's value in each signal period
+        step = ((self.__max_f - self.__min_f)/signal_period) * 2
         # This is internal function that will create the signal, from the min value
         # to max value. It's a generator to make it memory efficient.
         def generator():
             index = 0
-            while index < lenght:
+            # loop until to reach the lenght of original signal
+            while index < original_signal_lenght:
+                # each iteration start with an initial value
                 signal_value = self.__min_f
+                # create ascendent part of triangle
                 while signal_value < self.__max_f:
                     signal_value += step
                     index += 1
                     yield signal_value
-                
+                # create desscendent part of triangle
                 while signal_value > self.__min_f:
                     signal_value -= step
                     index += 1
@@ -58,13 +61,13 @@ class WahWahFilter():
         # Call the generator of the function and create a list from it
         triangle_signal = list(generator())
         # Trim triangle signal to lenght of original signal
-        triangle_signal = triangle_signal[:lenght]
+        triangle_signal = triangle_signal[:original_signal_lenght]
         # return triangle singla.
         return triangle_signal
 
     def apply_filter(self, original_signal, fs):
         # Create triangle signal
-        cuttoff_frequencies = self.create_triangle_waveform(len(original_signal), fs)
+        cuttoff_frequencies = self._create_triangle_waveform(len(original_signal), fs)
         # equation coefficients
         f1 = 2 * math.sin((math.pi * cuttoff_frequencies[0])/fs)
         # size of band pass filter
@@ -93,75 +96,61 @@ class WahWahFilter():
         # create an scipy array to reproduce it then
         wahwah_signal = array(normalized_bandpass)
         
-        #############################
-        # STATICS
-        print("- F1: {}".format(f1))
-        print("- Q1: {}".format(q1))
-        print("- Len cuttoff freqs: {}".format(len(cuttoff_frequencies)))
-        print("- Len highpass: {}".format(len(highpass)))
-        print("- Len bandpass: {}".format(len(bandpass)))
-        print("- Len lowpass: {}".format(len(lowpass)))
-        print("- Max bandpass: {}".format(max_bandpass))
-        print("- Scale relation: {}".format(normalized_relation))
-        #############################
-        
         return wahwah_signal
 
-    def plot_triangle_waveform(self, triangle_signal,
-                         title="Triangle waveform",
-                         label_x="Samples", label_y="Frecuency (Hz)",
-                         ref_1="Response in frecuency", refs_location="best"):
 
-        # plot signals to graphic
-        plt.plot(triangle_signal)
-        # set labels to axes
-        plt.title(title)
-        plt.xlabel(label_x)
-        plt.ylabel(label_y)
-        plt.legend([ref_1], loc=refs_location)
-        # show figure
-        plt.show()
+def save_raw_to_wav(raw_data, wav_file, fs):
+    print("\n==================================================\n")
+    print("Converting raw data to wav file: %s" % wavfile)
+    wavfile.write(wav_file, fs, raw_data.astype(numpy.dtype('i2')))
+    print("\n==================================================\n")
 
-    def plot_wahwah_signals(self, original_signal, wahwah_signal,
-                             title="Wahwah signal response",
-                             label_x="Time", label_y="Amplitude",
-                             ref_1="Original signal", ref_2="Wahwah signal",
-                             refs_location="best"):
+def convert_wav_to_raw(wav_file):
+    print("\n==================================================\n")
+    data = None
+    fs, data = wavfile.read(wav_file)
+    print("Creating raw data from wav file: %s - FS: %d" % (wavfile, fs))
+    print("\n==================================================\n")
 
-        # plot signals to graphic
-        plt.plot(original_signal)
-        plt.plot(wahwah_signal)
-        # set legends to graph
-        plt.title(title)
-        plt.xlabel(label_x)
-        plt.ylabel(label_y)
-        plt.legend([ref_1, ref_2], loc=refs_location)
-        # show figure
-        plt.show()
+    return fs, data
 
-    @staticmethod
-    def save_raw_to_wav(raw_data, wav_file, fs):
-        print("\n==================================================\n")
-        print("Converting raw data to wav file: %s" % wavfile)
-        wavfile.write(wav_file, fs, raw_data.astype(numpy.dtype('i2')))
-        print("\n==================================================\n")
+def play_audio(audio_file):
+    print("\n==================================================\n")
+    os.system("aplay %s" % audio_file)
+    print("\n==================================================\n")
 
-    @staticmethod
-    def convert_wav_to_raw(wav_file):
-        print("\n==================================================\n")
-        data = None
-        fs, data = wavfile.read(wav_file)
-        print("Creating raw data from wav file: %s - FS: %d" % (wavfile, fs))
-        print("\n==================================================\n")
+def plot_triangle_waveform(triangle_signal,
+                        title="Triangle waveform",
+                        label_x="Samples", label_y="Frecuency (Hz)",
+                        ref_1="Response in frecuency", refs_location="best"):
 
-        return fs, data
+    # plot signals to graphic
+    plt.plot(triangle_signal)
+    # set labels to axes
+    plt.title(title)
+    plt.xlabel(label_x)
+    plt.ylabel(label_y)
+    plt.legend([ref_1], loc=refs_location)
+    # show figure
+    plt.show()
 
-    @staticmethod
-    def play_audio(audio_file):
-        print("\n==================================================\n")
-        os.system("aplay %s" % audio_file)
-        print("\n==================================================\n")
+def plot_wahwah_signals(original_signal, wahwah_signal,
+                            title="Wahwah signal response",
+                            label_x="Time", label_y="Amplitude",
+                            ref_1="Original signal", ref_2="Wahwah signal",
+                            refs_location="best"):
 
+    # plot signals to graphic
+    plt.plot(original_signal)
+    plt.plot(wahwah_signal)
+    # set legends to graph
+    plt.title(title)
+    plt.xlabel(label_x)
+    plt.ylabel(label_y)
+    plt.legend([ref_1, ref_2], loc=refs_location)
+    # show figure
+    plt.show()
+    
 def main():
     # Filter settings
     DAMPING = 0.05
@@ -176,18 +165,18 @@ def main():
 
     wahwah = WahWahFilter(DAMPING, MIN_F, MAX_F, WAH_F)
 
-    fs, original_signal = WahWahFilter.convert_wav_to_raw(ORIGINAL_WAV)
+    fs, original_signal = convert_wav_to_raw(ORIGINAL_WAV)
 
-    # triangle_signal = wahwah.create_triangle_waveform(len(original_signal), fs)
-    # wahwah.plot_triangle_waveform(triangle_signal)
+    triangle_signal = wahwah._create_triangle_waveform(len(original_signal), fs)
+    plot_triangle_waveform(triangle_signal)
 
     wahwah_signal = wahwah.apply_filter(original_signal, fs)
 
-    wahwah.plot_wahwah_signals(original_signal, wahwah_signal)
+    plot_wahwah_signals(original_signal, wahwah_signal)
 
-    WahWahFilter.save_raw_to_wav(wahwah_signal, WAHWAH_WAV, fs)
+    save_raw_to_wav(wahwah_signal, WAHWAH_WAV, fs)
 
-    WahWahFilter.play_audio(WAHWAH_WAV)
+    play_audio(WAHWAH_WAV)
     
 
 if __name__ == "__main__":
