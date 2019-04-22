@@ -15,28 +15,33 @@ class View:
     def show_main_menu(self):
         print("\n==================================================\n")
         print("\nSelect one of options below:\n")
-        print("\t0 - Exit program")
-        print("\t1 - Show current configuration parameters")
-        print("\t2 - Update configuration parameters")
-        print("\t3 - Save current values into config file")
-        print("\t4 - Plot response in frecuency of comb filter")
-        print("\t5 - Plot flanger signal over original signal")
-        print("\t6 - Play original wav audio")
-        print("\t7 - Play flanger wav audio")
+        print("\t 0 - Exit program")
+        print("\t 1 - Show current configuration parameters")
+        print("\t 2 - Update configuration parameters")
+        print("\t 3 - Save current values into config file")
+        print("\t 4 - Plot response in frecuency of comb filter")
+        print("\t 5 - Plot flanger signal over original signal")
+        print("\t 6 - Plot wahwah triangle signal")
+        print("\t 7 - Plot wahwah signal over original signal")
+        print("\t 8 - Play original wav audio")
+        print("\t 9 - Play flanger wav audio")
+        print("\t10 - Play wahwah wav audio")
+        print("\t11 - Play flanger & wahwah concatenated wav audio")
+        print("\t12 - Restore default values")
         print("\n==================================================\n")
 
         while True:
             try:
-                option = int(input("--- Enter option from 0 to 7 > Option: "))
+                option = int(input("--- Enter option from 0 to 12 > Option: "))
                 print("\n==================================================\n")
-                if (option >= 0 and option <= 7):
+                if (option >= 0 and option <= 12):
                     break
                 else:
                     print("\n==================================================\n")
                     raise ValueError
             except ValueError:
                 print("\n++++++++++++++++++++++++++++++++++++++++++++++++++\n")
-                print("ERROR: Type a valid menu option from 0 to 7!")
+                print("ERROR: Type a valid menu option from 0 to 12!")
                 print("\n++++++++++++++++++++++++++++++++++++++++++++++++++\n")
 
         return option
@@ -44,16 +49,16 @@ class View:
     def show_settings_menu(self):
         print("\n==================================================\n")
         print("\nSelect one of options below:\n")
-        print("\t|--- 0 - no modify any parameter")
-        print("\t|--- 1 - set_welcome_message")
-        print("\t|--- 2 - set_wav_original")
-        print("\t|--- 3 - set_wav_modified")
-        print("\t|--- 4 - set_comb_delay")
-        print("\t|--- 5 - set_comb_scale")
-        print("\t|--- 6 - set_flanger_max_delay")
-        print("\t|--- 7 - set_flanger_scale")
-        print("\t|--- 8 - set_flanger_rate")
-        print("\t|--- 9 - set_wahwah_damping")
+        print("\t|---  0 - no modify any parameter")
+        print("\t|---  1 - set_welcome_message")
+        print("\t|---  2 - set_wav_original")
+        print("\t|---  3 - set_wav_modified")
+        print("\t|---  4 - set_comb_delay")
+        print("\t|---  5 - set_comb_scale")
+        print("\t|---  6 - set_flanger_max_delay")
+        print("\t|---  7 - set_flanger_scale")
+        print("\t|---  8 - set_flanger_rate")
+        print("\t|---  9 - set_wahwah_damping")
         print("\t|--- 10 - set_wahwah_min_cutoff")
         print("\t|--- 11 - set_wahwah_max_cutoff")
         print("\t|--- 12 - set_wahwah_frequency")
