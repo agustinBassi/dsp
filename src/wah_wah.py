@@ -31,28 +31,30 @@ class WahWahFilter():
             "WahWahFilter(damping = %f, min_f = %d, max_f = %d, wah_f = %d)" %
              (self.__damping, self.__min_f, self.__max_f, self.__wah_f))
 
-    def __create_triangle_waveform(self, lenght, fs):
+    def create_triangle_waveform(self, lenght, fs):
         # establish signal period from fs and wah wah frecuency
         signal_period = fs/self.__wah_f
         # steps which triangle signal will do, considering the minummum
         # and max value that it has to reach. Also signal period is taken in account 
         # and finally it is multiplied by 2, because the signal will have to 
         # increase and decrease it's value in 1 signal period
-        step = int( ((self.__max_f - self.__min_f)/signal_period) * 2 )
-        # the times that signal triangle waveform will be executed is related to 
-        # the FS/signal period multiplied by the duration in seconds of the original signal
-        times = int((fs/signal_period) * (lenght/fs))
+        step = float( ((self.__max_f - self.__min_f)/signal_period) * 2 )
         # This is internal function that will create the signal, from the min value
         # to max value. It's a generator to make it memory efficient.
         def generator():
-            # The signal periods
-            for i in range (times):
-                # Times which signal increase the values dictated by step
-                for j in range(self.__min_f, self.__max_f, step):
-                    yield j
-                # Times which signal decrrease the values dictated by step
-                for j in range(self.__max_f*-1, self.__min_f*-1, step):
-                    yield j * -1
+            index = 0
+            while index < lenght:
+                signal_value = self.__min_f
+                while signal_value < self.__max_f:
+                    signal_value += step
+                    index += 1
+                    yield signal_value
+                
+                while signal_value > self.__min_f:
+                    signal_value -= step
+                    index += 1
+                    yield signal_value
+
         # Call the generator of the function and create a list from it
         triangle_signal = list(generator())
         # Trim triangle signal to lenght of original signal
@@ -62,7 +64,7 @@ class WahWahFilter():
 
     def apply_filter(self, original_signal, fs):
         # Create triangle signal
-        cuttoff_frequencies = self.__create_triangle_waveform(len(original_signal), fs)
+        cuttoff_frequencies = self.create_triangle_waveform(len(original_signal), fs)
         # equation coefficients
         f1 = 2 * math.sin((math.pi * cuttoff_frequencies[0])/fs)
         # size of band pass filter
@@ -82,14 +84,12 @@ class WahWahFilter():
             lowpass[n] = (f1 * bandpass[n]) + lowpass[n - 1]
             # recalculate equation coefficients
             f1 = 2 * math.sin((math.pi * cuttoff_frequencies[n])/fs)
-        
         # Obtain the max value of YB
         max_bandpass = numpy.amax(bandpass)
         # Establish a relation between max YB value and INT 16 max value
         normalized_relation = WahWahFilter.MAX_INT16_VALUE/max_bandpass
         # adapt wahwah signal to original signal amplitude
-        normalized_bandpass = [int(original_signal * normalized_relation) 
-                            for original_signal in bandpass]
+        normalized_bandpass = [int(x * normalized_relation) for x in bandpass]
         # create an scipy array to reproduce it then
         wahwah_signal = array(normalized_bandpass)
         
@@ -165,9 +165,9 @@ class WahWahFilter():
 def main():
     # Filter settings
     DAMPING = 0.05
-    MIN_F = 500
-    MAX_F = 3000
-    WAH_F = 2.5
+    MIN_F = 300
+    MAX_F = 4000
+    WAH_F = 0.4
     # Program settings
     ORIGINAL_WAV = "/home/juan.bassi/personalProjects/dsp_controller/wavs/guitars.wav"
     WAHWAH_WAV = "/home/juan.bassi/personalProjects/dsp_controller/wavs/guitars_modified.wav"
@@ -178,12 +178,12 @@ def main():
 
     fs, original_signal = WahWahFilter.convert_wav_to_raw(ORIGINAL_WAV)
 
-    # triangle_signal = wahwah.__create_triangle_waveform(len(original_signal), fs)
+    # triangle_signal = wahwah.create_triangle_waveform(len(original_signal), fs)
     # wahwah.plot_triangle_waveform(triangle_signal)
 
     wahwah_signal = wahwah.apply_filter(original_signal, fs)
 
-    # wahwah.plot_wahwah_signals(original_signal, wahwah_signal)
+    wahwah.plot_wahwah_signals(original_signal, wahwah_signal)
 
     WahWahFilter.save_raw_to_wav(wahwah_signal, WAHWAH_WAV, fs)
 
