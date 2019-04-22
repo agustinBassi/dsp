@@ -1,15 +1,8 @@
-
-import logging
-import os
 import math
 
-import matplotlib.pyplot as plt
-import numpy
-from numpy import ndarray as np
-import scipy.signal as signal
-from scipy.io import wavfile
-from numpy  import array
-from playsound import playsound
+import numpy as numpy
+from numpy import array as np_array
+
 
 class WahWahFilter():
 
@@ -93,11 +86,16 @@ class WahWahFilter():
         normalized_relation = WahWahFilter.MAX_INT16_VALUE/max_bandpass
         # adapt wahwah signal to original signal amplitude
         normalized_bandpass = [int(x * normalized_relation) for x in bandpass]
-        # create an scipy array to reproduce it then
-        wahwah_signal = array(normalized_bandpass)
+        # create an np array to reproduce it then
+        wahwah_signal = np_array(normalized_bandpass)
         
         return wahwah_signal
 
+
+import os
+import matplotlib.pyplot as plt
+import scipy.signal as signal
+from scipy.io import wavfile
 
 def save_raw_to_wav(raw_data, wav_file, fs):
     print("\n==================================================\n")
@@ -119,7 +117,7 @@ def play_audio(audio_file):
     os.system("aplay %s" % audio_file)
     print("\n==================================================\n")
 
-def plot_triangle_waveform(triangle_signal,
+def plot_wahwah_triangle_wave(triangle_signal,
                         title="Triangle waveform",
                         label_x="Samples", label_y="Frecuency (Hz)",
                         ref_1="Response in frecuency", refs_location="best"):
@@ -168,7 +166,7 @@ def main():
     fs, original_signal = convert_wav_to_raw(ORIGINAL_WAV)
 
     triangle_signal = wahwah._create_triangle_waveform(len(original_signal), fs)
-    plot_triangle_waveform(triangle_signal)
+    plot_wahwah_triangle_wave(triangle_signal)
 
     wahwah_signal = wahwah.apply_filter(original_signal, fs)
 

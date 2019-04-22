@@ -78,10 +78,10 @@ class Controller:
         wav_modified_abs_path = self.__model.get_parent_dir() + "/" + \
                                 self.__model.get_param(3)
         try:
-            raw_original = Model.convert_wav_to_raw(wav_original_abs_path)
+            fs, raw_original = Model.convert_wav_to_raw(wav_original_abs_path)
             raw_modified = self.__model.get_flanger_signal(raw_original)
             try:
-                Model.save_raw_to_wav(raw_modified, wav_modified_abs_path)
+                Model.save_raw_to_wav(raw_modified, wav_modified_abs_path, fs)
                 self.__view.play_audio(wav_modified_abs_path)
             except:
                 self.__view.show_error("Error converting or playing flanger signal wav")
@@ -94,7 +94,7 @@ class Controller:
         if wav_original != None:
             wav_original_abs_path = self.__model.get_parent_dir() + "/" + wav_original
 
-            raw_original = Model.convert_wav_to_raw(wav_original_abs_path)
+            fs, raw_original = Model.convert_wav_to_raw(wav_original_abs_path)
             raw_modified = self.__model.get_flanger_signal(raw_original)
 
             self.__view.show_info("Plotting flanger signals")

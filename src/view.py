@@ -132,6 +132,36 @@ class View:
         # show figure
         plt.show()
 
+    def plot_wahwah_triangle_wave(self, triangle_signal,
+                        title="Triangle waveform",
+                        label_x="Samples", label_y="Frecuency (Hz)",
+                        ref_1="Response in frecuency", refs_location="best"):
+        # plot signals to graphic
+        plt.plot(triangle_signal)
+        # set labels to axes
+        plt.title(title)
+        plt.xlabel(label_x)
+        plt.ylabel(label_y)
+        plt.legend([ref_1], loc=refs_location)
+        # show figure
+        plt.show()
+
+    def plot_wahwah_signals(self, original_signal, wahwah_signal,
+                                title="Wahwah signal response",
+                                label_x="Time", label_y="Amplitude",
+                                ref_1="Original signal", ref_2="Wahwah signal",
+                                refs_location="best"):
+        # plot signals to graphic
+        plt.plot(original_signal)
+        plt.plot(wahwah_signal)
+        # set legends to graph
+        plt.title(title)
+        plt.xlabel(label_x)
+        plt.ylabel(label_y)
+        plt.legend([ref_1, ref_2], loc=refs_location)
+        # show figure
+        plt.show()
+
     def show_current_settings(self, settings):
         print("\n==================================================\n")
         print("Current settings:\n")
