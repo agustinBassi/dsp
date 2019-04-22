@@ -53,19 +53,23 @@ class View:
         print("\t|--- 6 - set_flanger_max_delay")
         print("\t|--- 7 - set_flanger_scale")
         print("\t|--- 8 - set_flanger_rate")
+        print("\t|--- 9 - set_wahwah_damping")
+        print("\t|--- 10 - set_wahwah_min_cutoff")
+        print("\t|--- 11 - set_wahwah_max_cutoff")
+        print("\t|--- 12 - set_wahwah_frequency")
         print("\n==================================================\n")
 
         while True:
             try:
-                option = int(input("--- Enter option from 0 to 9 > Option: "))
+                option = int(input("--- Enter option from 0 to 12 > Option: "))
                 print("\n==================================================\n")
-                if (option >= 0 and option <= 9):
+                if (option >= 0 and option <= 12):
                     break
                 else:
                     raise ValueError
             except ValueError:
                 print("\n++++++++++++++++++++++++++++++++++++++++++++++++++\n")
-                print("ERROR: Type a valid menu option from 0 to 9!")
+                print("ERROR: Type a valid menu option from 0 to 12!")
                 print("\n++++++++++++++++++++++++++++++++++++++++++++++++++\n")
 
         value = None
@@ -83,9 +87,17 @@ class View:
         elif option == 6:
             value = (float(input("\n\t--- Enter flanger delay > ")))
         elif option == 7:
-            value = (float(input("\n\--- tEnter flanger scale > ")))
+            value = (float(input("\n\t--- Enter flanger scale > ")))
         elif option == 8:
-            value = (float(input("\n\--- tEnter flanger rate > ")))
+            value = (float(input("\n\t--- Enter flanger rate > ")))
+        elif option == 9:
+            value = (float(input("\n\t--- Enter wahwah damping > ")))
+        elif option == 10:
+            value = (int(input("\n\t--- Enter wahwah min cutoff > ")))
+        elif option == 11:
+            value = (int(input("\n\t--- Enter wahwah max cutoff > ")))
+        elif option == 12:
+            value = (float(input("\n\t--- Enter wahwah frequency > ")))
 
         return option, value
 

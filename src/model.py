@@ -94,7 +94,7 @@ class FlangerFilter:
         All parameters about the filter should be confired before
         use this function.
         """
-        SAFE_BOUND_LIMIT = 100
+        SAFE_BOUND_LIMIT = 1000
 
         flanger_signal = None
 
@@ -107,7 +107,10 @@ class FlangerFilter:
             # Copy original signal into new one that will be returned
             flanger_signal = ndarray.copy(original_signal)
 
-            for i in range ((max_delay_sample + 1), len(original_signal)-SAFE_BOUND_LIMIT):
+            # for i in range ((max_delay_sample + 1), len(original_signal)-SAFE_BOUND_LIMIT):
+            
+            i = max_delay_sample + 1
+            while i < len(original_signal)-SAFE_BOUND_LIMIT:
                 current_sinus = sinus_reference(i)
 
                 current_delay = max_delay_sample * current_sinus
@@ -115,6 +118,8 @@ class FlangerFilter:
                 flanger_signal[i] = int((self.__scale * original_signal[i]) + 
                                         (self.__scale * 
                                         original_signal[i - int(current_delay)]))
+                
+                i += 1
 
         return flanger_signal
 
@@ -211,29 +216,29 @@ class WahWahFilter():
     # For limit the amplitude of wah wah signal for int16 wav file format
     MAX_INT16_VALUE = 32767
 
-    def __init__(self, damping, min_f, max_f, wah_f):
+    def __init__(self, damping, min_cutoff, max_cutoff, frequency):
         self.__damping = damping
-        self.__min_f = min_f
-        self.__max_f = max_f
-        self.__wah_f = wah_f
+        self.__min_cutoff = min_cutoff
+        self.__max_cutoff = max_cutoff
+        self.__frequency = frequency
 
     def __repr__(self):
         return ("{'damping': '%f', 'min_f': '%d','max_f': '%d','wah_f': '%d'}" %
-                (self.__damping, self.__min_f, self.__max_f, self.__wah_f))
+                (self.__damping, self.__min_cutoff, self.__max_cutoff, self.__frequency))
 
     def __str__(self):
         return (
             "WahWahFilter(damping = %f, min_f = %d, max_f = %d, wah_f = %d)" %
-             (self.__damping, self.__min_f, self.__max_f, self.__wah_f))
+             (self.__damping, self.__min_cutoff, self.__max_cutoff, self.__frequency))
 
     def _create_triangle_waveform(self, original_signal_lenght, fs):
         # establish signal period from fs and wah wah frecuency
-        signal_period = fs/self.__wah_f
+        signal_period = fs/self.__frequency
         # steps which triangle signal will do, considering the minummum
         # and max value that it has to reach. Also signal period is taken in account 
         # and finally it is multiplied by 2, because the signal will have to 
         # increase and decrease it's value in each signal period
-        step = ((self.__max_f - self.__min_f)/signal_period) * 2
+        step = ((self.__max_cutoff - self.__min_cutoff)/signal_period) * 2
         # This is internal function that will create the signal, from the min value
         # to max value. It's a generator to make it memory efficient.
         def generator():
@@ -241,14 +246,14 @@ class WahWahFilter():
             # loop until to reach the lenght of original signal
             while index < original_signal_lenght:
                 # each iteration start with an initial value
-                signal_value = self.__min_f
+                signal_value = self.__min_cutoff
                 # create ascendent part of triangle
-                while signal_value < self.__max_f:
+                while signal_value < self.__max_cutoff:
                     signal_value += step
                     index += 1
                     yield signal_value
                 # create desscendent part of triangle
-                while signal_value > self.__min_f:
+                while signal_value > self.__min_cutoff:
                     signal_value -= step
                     index += 1
                     yield signal_value
@@ -293,6 +298,55 @@ class WahWahFilter():
         
         return wahwah_signal
 
+    @property
+    def damping(self):
+        return self.__damping
+
+    @damping.setter
+    def damping(self, value):
+        self.__damping = value
+
+    @damping.getter
+    def damping(self):
+        return self.__damping
+
+    @property
+    def min_cutoff(self):
+        return self.__min_cutoff
+
+    @min_cutoff.setter
+    def min_cutoff(self, value):
+        self.__min_cutoff = value
+
+    @min_cutoff.getter
+    def min_cutoff(self):
+        return self.__min_cutoff
+
+    @property
+    def max_cutoff(self):
+        return self.__max_cutoff
+
+    @max_cutoff.setter
+    def max_cutoff(self, value):
+        self.__max_cutoff = value
+
+    @max_cutoff.getter
+    def max_cutoff(self):
+        return self.__max_cutoff
+
+    @property
+    def frequency(self):
+        return self.__frequency
+
+    @frequency.setter
+    def frequency(self, value):
+        self.__frequency = value
+
+    @frequency.getter
+    def frequency(self):
+        return self.__frequency
+
+    
 
 class Model:
 
@@ -304,6 +358,10 @@ class Model:
     DEFAULT_FLANGER_MAX_DELAY = 0.003
     DEFAULT_FLANGER_SCALE = 0.5
     DEFAULT_FLANGER_RATE = 1.0
+    DEFAULT_WAHWAH_DAMPING = 0.05
+    DEFAULT_WAHWAH_MIN_CUTOFF = 500
+    DEFAULT_WAHWAH_MAX_CUTOFF = 3000
+    DEFAULT_WAHWAH_FREQUENCY = 1.1
 
     def __init__(self, db):
         self.__db = db
@@ -320,6 +378,12 @@ class Model:
             Model.DEFAULT_FLANGER_MAX_DELAY, 
             Model.DEFAULT_FLANGER_SCALE, 
             Model.DEFAULT_FLANGER_RATE)
+
+        self.__wahwah = WahWahFilter(
+            Model.DEFAULT_WAHWAH_DAMPING, 
+            Model.DEFAULT_WAHWAH_MIN_CUTOFF,
+            Model.DEFAULT_WAHWAH_MAX_CUTOFF, 
+            Model.DEFAULT_WAHWAH_FREQUENCY)
 
     def load_data_from_db(self):
         config_data = configparser.ConfigParser()
@@ -338,6 +402,12 @@ class Model:
             float(config_data['FLANGER']['flanger_scale']), 
             float(config_data['FLANGER']['flanger_rate']))
 
+        self.__wahwah = WahWahFilter(
+            float(config_data['WAHWAH']['wahwah_damping']), 
+            int(config_data['WAHWAH']['wahwah_min_cutoff']), 
+            int(config_data['WAHWAH']['wahwah_max_cutoff']),
+            float(config_data['WAHWAH']['wahwah_frequency']))
+
     def save_data_to_db(self):
         config_data = configparser.ConfigParser()
         config_data.read(self.__db)
@@ -350,6 +420,11 @@ class Model:
         config_data['FLANGER']['flanger_max_delay'] = str(self.__flanger.max_delay)
         config_data['FLANGER']['flanger_scale'] = str(self.__flanger.scale)
         config_data['FLANGER']['flanger_rate'] = str(self.__flanger.rate)
+        config_data['WAHWAH']['wahwah_damping'] = str(self.__wahwah.damping)
+        config_data['WAHWAH']['wahwah_min_cutoff'] = str(self.__wahwah.min_cutoff)
+        config_data['WAHWAH']['wahwah_max_cutoff'] = str(self.__wahwah.max_cutoff)
+        config_data['WAHWAH']['wahwah_frequency'] = str(self.__wahwah.frequency)
+
     
         with open(self.__db, 'w') as configfile:
             config_data.write(configfile)
@@ -363,11 +438,16 @@ class Model:
             "\t- 'comb.scale': %.2f\n" \
             "\t- 'flanger.max_delay': %.3f\n" \
             "\t- 'flanger.scale': %.2f\n" \
-            "\t- 'flanger.rate': %.2f\n" % \
+            "\t- 'flanger.rate': %.2f\n"  \
+            "\t- 'wahwah.damping': %.2f\n"  \
+            "\t- 'wahwah.min_cutoff': %d\n"  \
+            "\t- 'wahwah.max_cutoff': %d\n"  \
+            "\t- 'wahwah.frequency': %.2f\n" %\
             (self.__config.welcome_message, self.__config.wav_original,
              self.__config.wav_modified, self.__comb.delay, self.__comb.scale,
              self.__flanger.max_delay, self.__flanger.scale,
-             self.__flanger.rate)
+             self.__flanger.rate, self.__wahwah.damping, self.__wahwah.min_cutoff,
+             self.__wahwah.max_cutoff, self.__wahwah.frequency)
 
         return params
 
@@ -390,6 +470,14 @@ class Model:
             self.__flanger.scale = value
         elif option == 8 and isinstance(value, float):
             self.__flanger.rate = value
+        elif option == 9 and isinstance(value, float):
+            self.__wahwah.damping = value
+        elif option == 10 and isinstance(value, int):
+            self.__wahwah.min_cutoff = value
+        elif option == 11 and isinstance(value, int):
+            self.__wahwah.max_cutoff = value
+        elif option == 12 and isinstance(value, float):
+            self.__wahwah.frequency = value
         else:
             error_flag = True
 
@@ -398,7 +486,7 @@ class Model:
     def get_param(self, option):
         value = None
 
-        if isinstance(option, int) and option >= 1 and option < 9:
+        if isinstance(option, int) and option >= 1 and option <= 12:
             data = {
                 1: self.__config.welcome_message,
                 2: self.__config.wav_original,
@@ -408,6 +496,10 @@ class Model:
                 6: self.__flanger.max_delay,
                 7: self.__flanger.scale,
                 8: self.__flanger.rate,
+                9: self.__wahwah.damping,
+                10: self.__wahwah.min_cutoff,
+                11: self.__wahwah.max_cutoff,
+                12: self.__wahwah.frequency
             }
             value = data[option]
 
