@@ -16,16 +16,20 @@ class View:
         print("\n==================================================\n")
         print("\nSelect one of options below:\n")
         print("\t(  0 ) --- Exit program")
+        print("\t(    )")
         print("\t(  1 ) --- Show current configuration parameters")
         print("\t(  2 ) --- Update configuration parameters")
         print("\t(  3 ) --- Save current values into config file")
+        print("\t(    )")
         print("\t(  4 ) --- Plot response in frecuency of comb filter")
         print("\t(  5 ) --- Plot flanger signal over original signal")
         print("\t(  6 ) --- Plot wahwah signal over original signal")
+        print("\t(    )")
         print("\t(  7 ) --- Play original wav audio")
         print("\t(  8 ) --- Play flanger wav audio")
         print("\t(  9 ) --- Play wahwah wav audio")
         print("\t( 10 ) --- Play flanger & wahwah concatenated wav audio")
+        print("\t(    )")
         print("\t( 11 ) --- Restore default values")
         print("\n==================================================\n")
 
@@ -82,30 +86,37 @@ class View:
 
         value = None
 
-        if option == 1:
-            value = (str(input("\n--- Enter welcome message > ")))
-        elif option == 2:
-            value = (str(input("\n--- Enter wav original path > ")))
-        elif option == 3:
-            value = (str(input("\n--- Enter wav modified path >")))
-        elif option == 4:
-            value = (int(input("\n--- Enter comb delay (int 1 to 100) > ")))
-        elif option == 5:
-            value = (float(input("\n--- Enter comb scale (float 0 to 100) > ")))
-        elif option == 6:
-            value = (float(input("\n--- Enter flanger delay (float 0.001 to 0.020) > ")))
-        elif option == 7:
-            value = (float(input("\n--- Enter flanger scale (float 0 to 1.0) > ")))
-        elif option == 8:
-            value = (float(input("\n--- Enter flanger rate (float 0 to 5.0) > ")))
-        elif option == 9:
-            value = (float(input("\n--- Enter wahwah damping (float 0.01 to 0.07) > ")))
-        elif option == 10:
-            value = (int(input("\n--- Enter wahwah min cutoff (int 100 to 100) > ")))
-        elif option == 11:
-            value = (int(input("\n--- Enter wahwah max cutoff int (2500 to 4500) > ")))
-        elif option == 12:
-            value = (float(input("\n--- Enter wahwah frequency (float 0.1 to 2.0) > ")))
+        try:
+            if option == 1:
+                value = (str(input("\n--- Enter welcome message > ")))
+            elif option == 2:
+                value = (str(input("\n--- Enter wav original path > ")))
+            elif option == 3:
+                value = (str(input("\n--- Enter wav modified path >")))
+            elif option == 4:
+                value = (int(input("\n--- Enter comb delay (int 1 to 100) > ")))
+            elif option == 5:
+                value = (float(input("\n--- Enter comb scale (float 0 to 100) > ")))
+            elif option == 6:
+                value = (float(input("\n--- Enter flanger delay (float 0.001 to 0.020) > ")))
+            elif option == 7:
+                value = (float(input("\n--- Enter flanger scale (float 0 to 1.0) > ")))
+            elif option == 8:
+                value = (float(input("\n--- Enter flanger rate (float 0 to 5.0) > ")))
+            elif option == 9:
+                value = (float(input("\n--- Enter wahwah damping (float 0.01 to 0.07) > ")))
+            elif option == 10:
+                value = (int(input("\n--- Enter wahwah min cutoff (int 100 to 1000) > ")))
+            elif option == 11:
+                value = (int(input("\n--- Enter wahwah max cutoff int (2500 to 4500) > ")))
+            elif option == 12:
+                value = (float(input("\n--- Enter wahwah frequency (float 0.1 to 2.0) > ")))
+        except:
+            print("\n++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+            print("ERROR: Onvalid input type")
+            print("\n++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+            option = None
+            value = None
 
         return option, value
 
