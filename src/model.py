@@ -238,7 +238,7 @@ class WahWahFilter():
         return ("WahWahFilter(damping = %f, min_f = %d, max_f = %d, wah_f = %d)" % (
             self.__damping, self.__min_cutoff, self.__max_cutoff, self.__frequency))
 
-    def __create_triangle_waveform(self, original_signal_lenght, fs):
+    def _create_triangle_waveform(self, original_signal_lenght, fs):
         # establish signal period from fs and wah wah frecuency
         signal_period = fs / self.__frequency
         # steps which triangle signal will do, considering the minummum
@@ -275,7 +275,7 @@ class WahWahFilter():
 
     def apply_filter(self, original_signal, fs):
         # Create triangle signal
-        cuttoff_frequencies = self.__create_triangle_waveform(
+        cuttoff_frequencies = self._create_triangle_waveform(
             len(original_signal), fs)
         # equation coefficients
         f1 = 2 * math.sin((math.pi * cuttoff_frequencies[0]) / fs)
@@ -356,11 +356,11 @@ class Model:
     DEFAULT_CONFIG_WAV_MODIFIED = "wavs/audio_modified.wav"
     DEFAULT_COMB_DELAY = 8
     DEFAULT_COMB_SCALE = 1.0
-    DEFAULT_FLANGER_MAX_DELAY = 0.005
+    DEFAULT_FLANGER_MAX_DELAY = 0.003
     DEFAULT_FLANGER_SCALE = 1.0
     DEFAULT_FLANGER_RATE = 0.5
     DEFAULT_WAHWAH_DAMPING = 0.05
-    DEFAULT_WAHWAH_MIN_CUTOFF = 500
+    DEFAULT_WAHWAH_MIN_CUTOFF = 300
     DEFAULT_WAHWAH_MAX_CUTOFF = 3000
     DEFAULT_WAHWAH_FREQUENCY = 0.4
     # For limit the amplitude of wah wah signal for int16 wav file format
@@ -451,7 +451,7 @@ class Model:
             self.__config.wav_modified = value
         elif option == 4 and isinstance(value, int) and value >= 1 and value <= 100:
             self.__comb.delay = value
-        elif option == 5 and isinstance(value, float) and value >= 1.0 and value <= 100.0:
+        elif option == 5 and isinstance(value, float) and value >= 0.1 and value <= 100.0:
             self.__comb.scale = value
         elif option == 6 and isinstance(value, float) and value >= 0.001 and value <= 0.02:
             self.__flanger.max_delay = value
@@ -494,6 +494,7 @@ class Model:
 
         return value
 
+    
     def get_comb_signal(self):
         return self.__comb.get_response_in_frecuency()
 
