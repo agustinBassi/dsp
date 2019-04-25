@@ -12,3 +12,5 @@ dsp_mvc/src/__pycache__/
 wavs/guitars_modified\.wav
 
 tests/__pycache__/
+
+wavs/audio_modified\.wav
