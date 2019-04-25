@@ -275,7 +275,7 @@ class WahWahFilter():
 
     def apply_filter(self, original_signal, fs):
         # Create triangle signal
-        cuttoff_frequencies = self.__create_triangle_waveform(
+        cuttoff_frequencies = self._create_triangle_waveform(
             len(original_signal), fs)
         # equation coefficients
         f1 = 2 * math.sin((math.pi * cuttoff_frequencies[0]) / fs)
@@ -356,11 +356,11 @@ class Model:
     DEFAULT_CONFIG_WAV_MODIFIED = "wavs/audio_modified.wav"
     DEFAULT_COMB_DELAY = 8
     DEFAULT_COMB_SCALE = 1.0
-    DEFAULT_FLANGER_MAX_DELAY = 0.005
+    DEFAULT_FLANGER_MAX_DELAY = 0.003
     DEFAULT_FLANGER_SCALE = 1.0
     DEFAULT_FLANGER_RATE = 0.5
     DEFAULT_WAHWAH_DAMPING = 0.05
-    DEFAULT_WAHWAH_MIN_CUTOFF = 500
+    DEFAULT_WAHWAH_MIN_CUTOFF = 300
     DEFAULT_WAHWAH_MAX_CUTOFF = 3000
     DEFAULT_WAHWAH_FREQUENCY = 0.4
     # For limit the amplitude of wah wah signal for int16 wav file format

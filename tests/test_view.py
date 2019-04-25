@@ -24,14 +24,3 @@ class TestView(unittest.TestCase):
 
     def tearDown(self):
         pass
-
-    def test_plot_wahwah_triangle(self):
-        wahwah = WahWahFilter(0.05, 300, 4500, 0.5)
-
-        triangle_signal = wahwah._create_triangle_waveform(143325, 11025)
-
-        view = View()
-
-        view.plot_wahwah_triangle_wave(triangle_signal)
-
-        pass
