@@ -122,7 +122,7 @@ class View:
 
     def plot_comb_filter(self, response_in_frequency,
                          title="Comb filter response in frecuency",
-                         label_x="Time", label_y="Amplitude",
+                         label_x="Frequency", label_y="Amplitude",
                          ref_1="Response in frecuency", refs_location="best"):
 
         logging.debug("Showing Comb filter plot - "

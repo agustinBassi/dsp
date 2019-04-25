@@ -72,6 +72,8 @@ class Configuration:
 class FlangerFilter:
     """TODO Comment
     """
+    # For limit the amplitude of wah wah signal for int16 wav file format
+    MAX_INT16_VALUE = 32767
 
     def __init__(self, max_delay, scale, rate):
         self.__max_delay = max_delay
@@ -89,15 +91,7 @@ class FlangerFilter:
                 % (self.__max_delay, self.__scale, self.__rate))
 
     def apply_filter(self, original_signal, fs):
-        """Apply flanger signal to raw signal.
-
-        All parameters about the filter should be confired before
-        use this function.
-        """
-        SAFE_BOUND_LIMIT = 1000
-
         flanger_signal = None
-
         if len(original_signal) > 0:
             # Create a lambda to call it when process delay later
             def sinus_reference(index): return math.sin(2 * math.pi * index *
@@ -105,21 +99,25 @@ class FlangerFilter:
             # Convert delay in ms to max delay in samples
             max_delay_sample = round(self.__max_delay * fs)
             # Copy original signal into new one that will be returned
-            flanger_signal = ndarray.copy(original_signal)
-
-            # for i in range ((max_delay_sample + 1), len(original_signal)-SAFE_BOUND_LIMIT):
-            
-            i = max_delay_sample + 1
-            while i < len(original_signal)-SAFE_BOUND_LIMIT:
+            flanger_signal = numpy.zeros(len(original_signal))
+            # iterate over original signal and create flanger signal
+            for i in range (max_delay_sample + 1, len(original_signal)):    
                 current_sinus = sinus_reference(i)
 
-                current_delay = max_delay_sample * current_sinus
+                current_delay = max_delay_sample * abs(current_sinus)
 
-                flanger_signal[i] = int((self.__scale * original_signal[i]) + 
-                                        (self.__scale * 
-                                        original_signal[i - int(current_delay)]))
-                
-                i += 1
+                flanger_signal[i] = ((original_signal[i]) + 
+                                     (self.__scale * 
+                                     original_signal[i - int(current_delay)]))
+
+            # Obtain the max value of flanger
+            max_flanger = numpy.amax( numpy.absolute(flanger_signal) )
+            # Establish a relation between max flanger value and INT 16 max value
+            normalized_relation = FlangerFilter.MAX_INT16_VALUE/max_flanger
+            # adapt wahwah signal to original signal amplitude
+            normalized_flanger = [int(x * normalized_relation) for x in flanger_signal]
+            # create an np array to reproduce it then
+            flanger_signal = np_array(normalized_flanger)
 
         return flanger_signal
 
