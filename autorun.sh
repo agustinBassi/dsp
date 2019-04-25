@@ -1,4 +1,4 @@
-"""
+: '
 MIT License
 
 Copyright (c) 2019 Agustin Bassi.
@@ -20,6 +20,15 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-"""
+'
 
-__version__ = "1.0.0"
+#!/bin/bash
+
+# Import $virtual_env_path variable from config.ini and remove whitespaces
+source <(grep virtual_env_path config.ini | sed 's/ *= */=/g')
+
+echo "VENV path is: $virtual_env_path"
+
+source $virtual_env_path/bin/activate
+
+python3 src/__main__.py
