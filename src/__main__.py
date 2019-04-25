@@ -16,13 +16,9 @@ DEFAULT_CONFIG_FILE = "/config.ini"
 DEFAULT_TEST_FLAG = False
 
 
-def parse_options(config_file, test_flag):
+def parse_options(config_file):
     # Create the parser and putting a title to it
     parser = argparse.ArgumentParser("Running '{}'".format('main.py'))
-
-    # store_true makes it a flag
-    parser.add_argument("-t", "--test", type=int, default=int(test_flag),
-                        choices=[0, 1], help="Test on/off")
 
     parser.add_argument(
         "-c",
@@ -35,10 +31,7 @@ def parse_options(config_file, test_flag):
     if arguments.config is not None:
         config_file = arguments.config
 
-    if arguments.test is not None:
-        test_flag = bool(arguments.test)
-
-    return config_file, test_flag
+    return config_file
 
 
 def main():
@@ -47,11 +40,10 @@ def main():
 
     config_file = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     config_file += DEFAULT_CONFIG_FILE
-    test_flag = DEFAULT_TEST_FLAG
 
-    config_file, test_flag = parse_options(config_file, test_flag)
+    config_file = parse_options(config_file)
 
-    View.show_program_arguments(config_file, test_flag)
+    View.show_program_arguments(config_file)
 
     controller = Controller(Model(config_file), View())
 

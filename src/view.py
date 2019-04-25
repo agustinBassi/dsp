@@ -212,9 +212,8 @@ class View:
         print("\n++++++++++++++++++++++++++++++++++++++++++++++++++\n")
 
     @staticmethod
-    def show_program_arguments(config_file, test_flag):
+    def show_program_arguments(config_file):
         print("\n///////////////////////////////////////////////////\n")
-        print("Command line arguments:")
+        print("Command line arguments:\n")
         print("\t- config_file: %s" % config_file)
-        print("\t- test_flag:   %d" % test_flag)
         print("\n///////////////////////////////////////////////////\n")
