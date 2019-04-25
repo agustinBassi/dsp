@@ -1,99 +1,164 @@
-"""This module has all needed to plot filters signals with pyplot library.
-
-Copyright: Agustin Bassi, 2019.
-License: BSD.
 """
+MIT License
+
+Copyright (c) 2019 Agustin Bassi.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+"""
+
 import logging
 import os
 
 import matplotlib.pyplot as plt
 from scipy.io import wavfile
 
+
 class View:
 
     def show_main_menu(self):
         print("\n==================================================\n")
         print("\nSelect one of options below:\n")
-        print("\t0 - exit program")
-        print("\t1 - show current configuration parameters")
-        print("\t2 - set new parameters")
-        print("\t3 - plot response in frecuency of comb filter")
-        print("\t4 - play original wav audio")
-        print("\t5 - play flanger wav audio")    
-        print("\t6 - plot flanger filter signal")
-        print("\t7 - save current values into config file")
+        print("\t(  0 ) --- Exit program")
+        print("\t(    )")
+        print("\t(  1 ) --- Show current configuration parameters")
+        print("\t(  2 ) --- Update configuration parameters")
+        print("\t(  3 ) --- Save current values into config file")
+        print("\t(    )")
+        print("\t(  4 ) --- Plot response in frecuency of comb filter")
+        print("\t(  5 ) --- Plot flanger signal over original signal")
+        print("\t(  6 ) --- Plot wahwah signal over original signal")
+        print("\t(    )")
+        print("\t(  7 ) --- Play original wav audio")
+        print("\t(  8 ) --- Play flanger wav audio")
+        print("\t(  9 ) --- Play wahwah wav audio")
+        print("\t( 10 ) --- Play flanger & wahwah concatenated wav audio")
+        print("\t(    )")
+        print("\t( 11 ) --- Restore default values")
         print("\n==================================================\n")
-        
+
         while True:
             try:
-                option = int(input("Enter option from 0 to 7 > "))
-                if (option >= 0 and option <= 7):
+                option = int(input("--- Enter option from 0 to 11 > Option: "))
+                print("\n==================================================\n")
+                if (option >= 0 and option <= 11):
                     break
                 else:
+                    print("\n==================================================\n")
                     raise ValueError
             except ValueError:
-                print("\n================================================\n")
-                print("ERROR - Type a valid menu option from 1 to 7!")
-                print("\n================================================\n")
+                print("\n++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+                print("ERROR: Type a valid menu option from 0 to 11!")
+                print("\n++++++++++++++++++++++++++++++++++++++++++++++++++\n")
 
         return option
 
     def show_settings_menu(self):
         print("\n==================================================\n")
         print("\nSelect one of options below:\n")
-        print("\t0 - no modify any parameter")
-        print("\t1 - set_welcome_message")
-        print("\t2 - set_wav_original")
-        print("\t3 - set_wav_modified")
-        print("\t4 - set_comb_delay")
-        print("\t5 - set_comb_scale")
-        print("\t6 - set_flanger_fs")
-        print("\t7 - set_flanger_max_delay")
-        print("\t8 - set_flanger_scale")
-        print("\t9 - set_flanger_rate")
+        print("\t|--- (  0 ) - no modify any parameter")
+        print("\t|")
+        print("\t|--- (  1 ) - CONFIG  --> welcome_message")
+        print("\t|--- (  2 ) - CONFIG  --> wav_original")
+        print("\t|--- (  3 ) - CONFIG  --> wav_modified")
+        print("\t|")
+        print("\t|--- (  4 ) - COMB    --> delay")
+        print("\t|--- (  5 ) - COMB    --> scale")
+        print("\t|")
+        print("\t|--- (  6 ) - FLANGER --> max_delay")
+        print("\t|--- (  7 ) - FLANGER --> scale")
+        print("\t|--- (  8 ) - FLANGER --> rate")
+        print("\t|")
+        print("\t|--- (  9 ) - WAHWAH  --> damping")
+        print("\t|--- ( 10 ) - WAHWAH  --> min_cutoff")
+        print("\t|--- ( 11 ) - WAHWAH  --> max_cutoff")
+        print("\t|--- ( 12 ) - WAHWAH  --> frequency")
         print("\n==================================================\n")
 
         while True:
             try:
-                option = int(input("Enter option from 0 to 9 > "))
-                if (option >= 0 and option <= 9):
+                option = int(input("--- Enter option from 0 to 12 > Option: "))
+                print("\n==================================================\n")
+                if (option >= 0 and option <= 12):
                     break
-                else: 
+                else:
                     raise ValueError
             except ValueError:
-                print("\n================================================\n")
-                print("ERROR - Type a valid menu option from 0 to 9!")
-                print("\n================================================\n")
-        
+                print("\n++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+                print("ERROR: Type a valid menu option from 0 to 12!")
+                print("\n++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+
         value = None
 
-        if option == 1:
-            value = (str(input("\n\tEnter welcome message > ")))
-        elif option == 2:
-            value = (str(input("\n\tEnter wav original > ")))
-        elif option == 3:
-            value = (str(input("\n\tEnter wav modified >" )))
-        elif option == 4:
-            value = (int(input("\n\tEnter comb delay > ")))
-        elif option == 5:
-            value = (float(input("\n\tEnter comb scale > ")))
-        elif option == 6:
-            value = (int(input("\n\tEnter flanger fs > ")))
-        elif option == 7:
-            value = (float(input("\n\tEnter flanger delay > ")))
-        elif option == 8:
-            value = (float(input("\n\tEnter flanger scale > ")))
-        elif option == 9:
-            value = (float(input("\n\tEnter flanger rate > ")))
+        try:
+            if option == 1:
+                value = (str(input("\n--- Enter welcome message > ")))
+            elif option == 2:
+                value = (str(input("\n--- Enter wav original path > ")))
+            elif option == 3:
+                value = (str(input("\n--- Enter wav modified path >")))
+            elif option == 4:
+                value = (int(input("\n--- Enter comb delay (int 1 to 100) > ")))
+            elif option == 5:
+                value = (
+                    float(
+                        input("\n--- Enter comb scale (float 0 to 100) > ")))
+            elif option == 6:
+                value = (
+                    float(
+                        input("\n--- Enter flanger delay (float 0.001 to 0.020) > ")))
+            elif option == 7:
+                value = (
+                    float(
+                        input("\n--- Enter flanger scale (float 0 to 1.0) > ")))
+            elif option == 8:
+                value = (
+                    float(
+                        input("\n--- Enter flanger rate (float 0 to 5.0) > ")))
+            elif option == 9:
+                value = (
+                    float(
+                        input("\n--- Enter wahwah damping (float 0.01 to 0.07) > ")))
+            elif option == 10:
+                value = (
+                    int(input("\n--- Enter wahwah min cutoff (int 100 to 1000) > ")))
+            elif option == 11:
+                value = (
+                    int(input("\n--- Enter wahwah max cutoff int (2500 to 4500) > ")))
+            elif option == 12:
+                value = (
+                    float(
+                        input("\n--- Enter wahwah frequency (float 0.1 to 2.0) > ")))
+        except BaseException:
+            print("\n++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+            print("ERROR: Onvalid input type")
+            print("\n++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+            option = None
+            value = None
 
         return option, value
 
-    def plot_comb_filter(self, response_in_frequency, 
-                         title="Comb filter response in frecuency", 
-                         label_x="Time", label_y="Amplitude",
+    def plot_comb_filter(self, response_in_frequency,
+                         title="Comb filter response in frecuency",
+                         label_x="Frequency", label_y="Amplitude",
                          ref_1="Response in frecuency", refs_location="best"):
 
-        logging.debug("Showing Comb filter plot - " \
+        logging.debug("Showing Comb filter plot - "
                       "title: %s, Label X: %s, Label Y: %s, " %
                       (title, label_x, label_y))
 
@@ -107,16 +172,16 @@ class View:
         # show figure
         plt.show()
 
-    def plot_flanger_signals(self, original_signal, flanger_signal, 
-                            title="Flanger signal response", 
-                            label_x="Time", label_y="Amplitude",
-                            ref_1="Original signal", ref_2="Flanger signal",
-                            refs_location="best"):
+    def plot_flanger_signals(self, original_signal, flanger_signal,
+                             title="Flanger signal response",
+                             label_x="Time", label_y="Amplitude",
+                             ref_1="Original signal", ref_2="Flanger signal",
+                             refs_location="best"):
 
-        logging.debug("Plot flanger signal - " \
+        logging.debug("Plot flanger signal - "
                       "title: %s, Label X: %s, Label Y: %s, " %
                       (title, label_x, label_y))
-                    
+
         # plot signals to graphic
         plt.plot(original_signal)
         plt.plot(flanger_signal)
@@ -128,39 +193,64 @@ class View:
         # show figure
         plt.show()
 
+    def plot_wahwah_triangle_wave(
+            self,
+            triangle_signal,
+            title="Triangle waveform",
+            label_x="Samples",
+            label_y="Frecuency (Hz)",
+            ref_1="Response in frecuency",
+            refs_location="best"):
+        # plot signals to graphic
+        plt.plot(triangle_signal)
+        # set labels to axes
+        plt.title(title)
+        plt.xlabel(label_x)
+        plt.ylabel(label_y)
+        plt.legend([ref_1], loc=refs_location)
+        # show figure
+        plt.show()
+
+    def plot_wahwah_signals(self, original_signal, wahwah_signal,
+                            title="Wahwah signal response",
+                            label_x="Time", label_y="Amplitude",
+                            ref_1="Original signal", ref_2="Wahwah signal",
+                            refs_location="best"):
+        # plot signals to graphic
+        plt.plot(original_signal)
+        plt.plot(wahwah_signal)
+        # set legends to graph
+        plt.title(title)
+        plt.xlabel(label_x)
+        plt.ylabel(label_y)
+        plt.legend([ref_1, ref_2], loc=refs_location)
+        # show figure
+        plt.show()
+
     def show_current_settings(self, settings):
         print("\n==================================================\n")
         print("Current settings:\n")
-        print(settings)    
+        print(settings)
         print("\n==================================================\n")
 
     def play_audio(self, audio_file):
-        error_flag = False
         print("\n==================================================\n")
-        try:
-            os.system("aplay %s" % audio_file)
-        except:
-            logging.error("Error playing wav file: %s" % audio_file)
-            error_flag = True
+        os.system("aplay %s" % audio_file)
         print("\n==================================================\n")
-        
-        return error_flag
 
     def show_error(self, error_message):
-        print("\n==================================================\n")
+        print("\n**************************************************\n")
         print("ERROR: %s" % error_message)
-        print("\n==================================================\n")
+        print("\n**************************************************\n")
 
     def show_info(self, error_message):
-        print("\n==================================================\n")
+        print("\n++++++++++++++++++++++++++++++++++++++++++++++++++\n")
         print("INFO: %s" % error_message)
-        print("\n==================================================\n")
+        print("\n++++++++++++++++++++++++++++++++++++++++++++++++++\n")
 
-    @staticmethod    
-    def show_program_arguments(log_level, config_file, test_flag):
-        print("\n==================================================\n")
-        print("Command line arguments:")
-        print("\t- log_level:   %d" % log_level)
+    @staticmethod
+    def show_program_arguments(config_file):
+        print("\n///////////////////////////////////////////////////\n")
+        print("Command line arguments:\n")
         print("\t- config_file: %s" % config_file)
-        print("\t- test_flag:   %d" % test_flag)
-        print("\n==================================================\n")
+        print("\n///////////////////////////////////////////////////\n")

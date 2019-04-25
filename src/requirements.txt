@@ -1,15 +1,3 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
+scipy==1.1.0
 matplotlib==3.0.2
 numpy==1.15.4
-scipy==1.1.0
-=======
-numpy==1.16.2
-matplotlib==3.0.3
-scipy==1.2.1
->>>>>>> 45fb493... Corrige errores de la primer version de mvc
-=======
-numpy==1.16.2
-matplotlib==3.0.3
-scipy==1.2.1
->>>>>>> 442b29c... Da soporte a todas las features propuestas en el menu

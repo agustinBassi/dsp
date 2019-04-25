@@ -8,3 +8,13 @@ wavs/tone_1khz_modified\.wav
 dsp_mvc/wavs/tone_1khz_modified\.wav
 
 dsp_mvc/src/__pycache__/
+
+tests/__pycache__/
+
+tests/fixtures/__pycache__/
+
+wavs/guitars_modified\.wav
+
+tests/__pycache__/
+
+wavs/audio_modified\.wav
