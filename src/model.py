@@ -116,7 +116,7 @@ class CombFilter:
         denominator = 1.0
 
         _, response_in_frequency = signal.freqz(numerator, denominator)
-        
+
         return response_in_frequency
 
     @property
@@ -174,14 +174,14 @@ class FlangerFilter:
             # Copy original signal into new one that will be returned
             flanger_signal = numpy.zeros(len(original_signal))
             # iterate over original signal and create flanger signal
-            for i in range (max_delay_sample + 1, len(original_signal)):    
+            for i in range(max_delay_sample + 1, len(original_signal)):
                 current_sinus = sinus_reference(i)
 
                 current_delay = max_delay_sample * abs(current_sinus)
 
-                flanger_signal[i] = ((original_signal[i]) + 
-                                     (self.__scale * 
-                                     original_signal[i - int(current_delay)]))
+                flanger_signal[i] = ((original_signal[i]) +
+                                     (self.__scale *
+                                      original_signal[i - int(current_delay)]))
 
         return flanger_signal
 
@@ -231,24 +231,24 @@ class WahWahFilter():
         self.__frequency = frequency
 
     def __repr__(self):
-        return ("{'damping': '%f', 'min_f': '%d','max_f': '%d','wah_f': '%d'}" %
-                (self.__damping, self.__min_cutoff, self.__max_cutoff, self.__frequency))
+        return ("{'damping': '%f', 'min_f': '%d','max_f': '%d','wah_f': '%d'}" % (
+            self.__damping, self.__min_cutoff, self.__max_cutoff, self.__frequency))
 
     def __str__(self):
-        return (
-            "WahWahFilter(damping = %f, min_f = %d, max_f = %d, wah_f = %d)" %
-             (self.__damping, self.__min_cutoff, self.__max_cutoff, self.__frequency))
+        return ("WahWahFilter(damping = %f, min_f = %d, max_f = %d, wah_f = %d)" % (
+            self.__damping, self.__min_cutoff, self.__max_cutoff, self.__frequency))
 
     def __create_triangle_waveform(self, original_signal_lenght, fs):
         # establish signal period from fs and wah wah frecuency
-        signal_period = fs/self.__frequency
+        signal_period = fs / self.__frequency
         # steps which triangle signal will do, considering the minummum
-        # and max value that it has to reach. Also signal period is taken in account 
-        # and finally it is multiplied by 2, because the signal will have to 
+        # and max value that it has to reach. Also signal period is taken in account
+        # and finally it is multiplied by 2, because the signal will have to
         # increase and decrease it's value in each signal period
-        step = ((self.__max_cutoff - self.__min_cutoff)/signal_period) * 2
+        step = ((self.__max_cutoff - self.__min_cutoff) / signal_period) * 2
         # This is internal function that will create the signal, from the min value
         # to max value. It's a generator to make it memory efficient.
+
         def generator():
             index = 0
             # loop until to reach the lenght of original signal
@@ -275,9 +275,10 @@ class WahWahFilter():
 
     def apply_filter(self, original_signal, fs):
         # Create triangle signal
-        cuttoff_frequencies = self.__create_triangle_waveform(len(original_signal), fs)
+        cuttoff_frequencies = self.__create_triangle_waveform(
+            len(original_signal), fs)
         # equation coefficients
-        f1 = 2 * math.sin((math.pi * cuttoff_frequencies[0])/fs)
+        f1 = 2 * math.sin((math.pi * cuttoff_frequencies[0]) / fs)
         # size of band pass filter
         q1 = 2 * self.__damping
         # initialize filters arrays with zero values
@@ -289,13 +290,14 @@ class WahWahFilter():
         bandpass[0] = f1 * highpass[0]
         lowpass[0] = f1 * bandpass[0]
         # loop to reach the lenght of original signal
-        for n in range (1, len(original_signal)):
-            highpass[n] = original_signal[n] - lowpass[n-1] - (q1 * bandpass[n - 1])
+        for n in range(1, len(original_signal)):
+            highpass[n] = original_signal[n] - \
+                lowpass[n - 1] - (q1 * bandpass[n - 1])
             bandpass[n] = (f1 * highpass[n]) + bandpass[n - 1]
             lowpass[n] = (f1 * bandpass[n]) + lowpass[n - 1]
             # recalculate equation coefficients
-            f1 = 2 * math.sin((math.pi * cuttoff_frequencies[n])/fs)
-        
+            f1 = 2 * math.sin((math.pi * cuttoff_frequencies[n]) / fs)
+
         return bandpass
 
     @property
@@ -382,13 +384,13 @@ class Model:
                                  float(config_data['COMB']['comb_scale']))
 
         self.__flanger = FlangerFilter(
-            float(config_data['FLANGER']['flanger_max_delay']), 
-            float(config_data['FLANGER']['flanger_scale']), 
+            float(config_data['FLANGER']['flanger_max_delay']),
+            float(config_data['FLANGER']['flanger_scale']),
             float(config_data['FLANGER']['flanger_rate']))
 
         self.__wahwah = WahWahFilter(
-            float(config_data['WAHWAH']['wahwah_damping']), 
-            int(config_data['WAHWAH']['wahwah_min_cutoff']), 
+            float(config_data['WAHWAH']['wahwah_damping']),
+            int(config_data['WAHWAH']['wahwah_min_cutoff']),
             int(config_data['WAHWAH']['wahwah_max_cutoff']),
             float(config_data['WAHWAH']['wahwah_frequency']))
 
@@ -401,15 +403,18 @@ class Model:
         config_data['GENERAL']['config_wav_modified'] = self.__config.wav_modified
         config_data['COMB']['comb_delay'] = str(self.__comb.delay)
         config_data['COMB']['comb_scale'] = str(self.__comb.scale)
-        config_data['FLANGER']['flanger_max_delay'] = str(self.__flanger.max_delay)
+        config_data['FLANGER']['flanger_max_delay'] = str(
+            self.__flanger.max_delay)
         config_data['FLANGER']['flanger_scale'] = str(self.__flanger.scale)
         config_data['FLANGER']['flanger_rate'] = str(self.__flanger.rate)
         config_data['WAHWAH']['wahwah_damping'] = str(self.__wahwah.damping)
-        config_data['WAHWAH']['wahwah_min_cutoff'] = str(self.__wahwah.min_cutoff)
-        config_data['WAHWAH']['wahwah_max_cutoff'] = str(self.__wahwah.max_cutoff)
-        config_data['WAHWAH']['wahwah_frequency'] = str(self.__wahwah.frequency)
+        config_data['WAHWAH']['wahwah_min_cutoff'] = str(
+            self.__wahwah.min_cutoff)
+        config_data['WAHWAH']['wahwah_max_cutoff'] = str(
+            self.__wahwah.max_cutoff)
+        config_data['WAHWAH']['wahwah_frequency'] = str(
+            self.__wahwah.frequency)
 
-    
         with open(self.__db, 'w') as configfile:
             config_data.write(configfile)
 
@@ -489,7 +494,6 @@ class Model:
 
         return value
 
-    
     def get_comb_signal(self):
         return self.__comb.get_response_in_frecuency()
 
@@ -509,17 +513,17 @@ class Model:
             Model.DEFAULT_CONFIG_WAV_MODIFIED)
 
         self.__comb = CombFilter(Model.DEFAULT_COMB_DELAY,
-                                    Model.DEFAULT_COMB_SCALE)
+                                 Model.DEFAULT_COMB_SCALE)
 
         self.__flanger = FlangerFilter(
-            Model.DEFAULT_FLANGER_MAX_DELAY, 
-            Model.DEFAULT_FLANGER_SCALE, 
+            Model.DEFAULT_FLANGER_MAX_DELAY,
+            Model.DEFAULT_FLANGER_SCALE,
             Model.DEFAULT_FLANGER_RATE)
 
         self.__wahwah = WahWahFilter(
-            Model.DEFAULT_WAHWAH_DAMPING, 
+            Model.DEFAULT_WAHWAH_DAMPING,
             Model.DEFAULT_WAHWAH_MIN_CUTOFF,
-            Model.DEFAULT_WAHWAH_MAX_CUTOFF, 
+            Model.DEFAULT_WAHWAH_MAX_CUTOFF,
             Model.DEFAULT_WAHWAH_FREQUENCY)
 
     def restore_default_values(self):
@@ -529,16 +533,15 @@ class Model:
     @staticmethod
     def save_raw_to_wav(raw_data, wav_file, fs):
         # Obtain the max value of flanger
-        max_raw_data = numpy.amax( numpy.absolute(raw_data) )
+        max_raw_data = numpy.amax(numpy.absolute(raw_data))
         # Establish a relation between max flanger value and INT 16 max value
-        normalized_relation = Model.MAX_INT16_VALUE/max_raw_data
+        normalized_relation = Model.MAX_INT16_VALUE / max_raw_data
         # adapt wahwah signal to original signal amplitude
         normalized_raw_data = [int(x * normalized_relation) for x in raw_data]
         # create an np array to reproduce it then
         raw_data = np_array(normalized_raw_data)
 
         wavfile.write(wav_file, fs, raw_data.astype(numpy.dtype('i2')))
-        
 
     @staticmethod
     def convert_wav_to_raw(wav_file):

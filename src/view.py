@@ -115,22 +115,36 @@ class View:
             elif option == 4:
                 value = (int(input("\n--- Enter comb delay (int 1 to 100) > ")))
             elif option == 5:
-                value = (float(input("\n--- Enter comb scale (float 0 to 100) > ")))
+                value = (
+                    float(
+                        input("\n--- Enter comb scale (float 0 to 100) > ")))
             elif option == 6:
-                value = (float(input("\n--- Enter flanger delay (float 0.001 to 0.020) > ")))
+                value = (
+                    float(
+                        input("\n--- Enter flanger delay (float 0.001 to 0.020) > ")))
             elif option == 7:
-                value = (float(input("\n--- Enter flanger scale (float 0 to 1.0) > ")))
+                value = (
+                    float(
+                        input("\n--- Enter flanger scale (float 0 to 1.0) > ")))
             elif option == 8:
-                value = (float(input("\n--- Enter flanger rate (float 0 to 5.0) > ")))
+                value = (
+                    float(
+                        input("\n--- Enter flanger rate (float 0 to 5.0) > ")))
             elif option == 9:
-                value = (float(input("\n--- Enter wahwah damping (float 0.01 to 0.07) > ")))
+                value = (
+                    float(
+                        input("\n--- Enter wahwah damping (float 0.01 to 0.07) > ")))
             elif option == 10:
-                value = (int(input("\n--- Enter wahwah min cutoff (int 100 to 1000) > ")))
+                value = (
+                    int(input("\n--- Enter wahwah min cutoff (int 100 to 1000) > ")))
             elif option == 11:
-                value = (int(input("\n--- Enter wahwah max cutoff int (2500 to 4500) > ")))
+                value = (
+                    int(input("\n--- Enter wahwah max cutoff int (2500 to 4500) > ")))
             elif option == 12:
-                value = (float(input("\n--- Enter wahwah frequency (float 0.1 to 2.0) > ")))
-        except:
+                value = (
+                    float(
+                        input("\n--- Enter wahwah frequency (float 0.1 to 2.0) > ")))
+        except BaseException:
             print("\n++++++++++++++++++++++++++++++++++++++++++++++++++\n")
             print("ERROR: Onvalid input type")
             print("\n++++++++++++++++++++++++++++++++++++++++++++++++++\n")
@@ -179,10 +193,14 @@ class View:
         # show figure
         plt.show()
 
-    def plot_wahwah_triangle_wave(self, triangle_signal,
-                        title="Triangle waveform",
-                        label_x="Samples", label_y="Frecuency (Hz)",
-                        ref_1="Response in frecuency", refs_location="best"):
+    def plot_wahwah_triangle_wave(
+            self,
+            triangle_signal,
+            title="Triangle waveform",
+            label_x="Samples",
+            label_y="Frecuency (Hz)",
+            ref_1="Response in frecuency",
+            refs_location="best"):
         # plot signals to graphic
         plt.plot(triangle_signal)
         # set labels to axes
@@ -194,10 +212,10 @@ class View:
         plt.show()
 
     def plot_wahwah_signals(self, original_signal, wahwah_signal,
-                                title="Wahwah signal response",
-                                label_x="Time", label_y="Amplitude",
-                                ref_1="Original signal", ref_2="Wahwah signal",
-                                refs_location="best"):
+                            title="Wahwah signal response",
+                            label_x="Time", label_y="Amplitude",
+                            ref_1="Original signal", ref_2="Wahwah signal",
+                            refs_location="best"):
         # plot signals to graphic
         plt.plot(original_signal)
         plt.plot(wahwah_signal)
